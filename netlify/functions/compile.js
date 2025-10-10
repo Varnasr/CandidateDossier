@@ -1,55 +1,68 @@
 // netlify/functions/compile.js
-import { execFile } from "node:child_process";
+import { spawn } from "node:child_process";
+import { writeFile, mkdtemp, readFile, access } from "node:fs/promises";
 import { tmpdir } from "node:os";
-import { mkdtempSync, writeFileSync, readFileSync } from "node:fs";
-import { join } from "node:path";
+import { join, dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
-export const handler = async (event) => {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+// Expose redirect path AND make sure the binary is bundled with this function
+export const config = {
+  path: "/api/compile",
+  included_files: ["netlify/functions/bin/tectonic"]
+};
+
+async function resolveTectonicPath() {
+  const candidates = [
+    // 1) Next to the function bundle (preferred)
+    join(__dirname, "../bin/tectonic"),
+    join(__dirname, "bin/tectonic"),
+    // 2) Lambda task root (where Netlify places bundled assets)
+    process.env.LAMBDA_TASK_ROOT && join(process.env.LAMBDA_TASK_ROOT, "netlify/functions/bin/tectonic"),
+    // 3) CWD (sometimes /var/task)
+    join(process.cwd(), "netlify/functions/bin/tectonic"),
+  ].filter(Boolean);
+
+  for (const p of candidates) {
+    try { await access(p); return p; } catch(_) {}
+  }
+  throw new Error("Tectonic binary not found in bundle. Expected at one of:\n" + candidates.join("\n"));
+}
+
+export default async (req, res) => {
   try {
-    if (event.httpMethod !== "POST") {
-      return { statusCode: 405, body: "Use POST" };
-    }
+    if (req.method !== "POST") { res.status(405).send("Method not allowed"); return; }
+    const { mainTex, blocksTex } = req.body || {};
+    if (!mainTex || !blocksTex) { res.status(400).send("mainTex and blocksTex required"); return; }
 
-    const { mainTex, blocksTex } = JSON.parse(event.body || "{}");
-    if (!mainTex || !blocksTex) {
-      return { statusCode: 400, body: "Missing mainTex or blocksTex" };
-    }
-
-    const work = mkdtempSync(join(tmpdir(), "latex-"));
+    const work = await mkdtemp(join(tmpdir(), "tectonic-"));
     const mainPath = join(work, "main.tex");
     const blocksPath = join(work, "candidate_blocks.tex");
-    writeFileSync(mainPath, mainTex, "utf8");
-    writeFileSync(blocksPath, blocksTex, "utf8");
+    const outDir = join(work, "out");
+    await writeFile(mainPath, mainTex, "utf8");
+    await writeFile(blocksPath, blocksTex, "utf8");
 
-    const bin = join(process.cwd(), "netlify", "functions", "bin", "tectonic");
+    const tt = await resolveTectonicPath();
 
-    const runLatex = () =>
-      new Promise((resolve, reject) => {
-        execFile(
-          bin,
-          ["-X", "compile", "main.tex", "--keep-logs"],
-          { cwd: work },
-          (err, stdout, stderr) => {
-            if (err) reject(new Error(stderr || stdout || String(err)));
-            else resolve(stdout);
-          }
-        );
+    const pdf = await new Promise((resolve, reject) => {
+      const p = spawn(tt, ["-X", "compile", mainPath, "--outdir", outDir], {
+        stdio: ["ignore", "pipe", "pipe"]
       });
+      let stderr = "";
+      p.stderr.on("data", d => { stderr += d.toString(); });
+      p.on("error", reject);
+      p.on("close", async (code) => {
+        if (code !== 0) return reject(new Error(stderr || `tectonic exit ${code}`));
+        try { resolve(await readFile(join(outDir, "main.pdf"))); }
+        catch (e) { reject(e); }
+      });
+    });
 
-    await runLatex();
-
-    const pdf = readFileSync(join(work, "main.pdf"));
-    return {
-      statusCode: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": "attachment; filename=\"dossier.pdf\"",
-        "Cache-Control": "no-store"
-      },
-      body: pdf.toString("base64"),
-      isBase64Encoded: true
-    };
-  } catch (e) {
-    return { statusCode: 500, body: `Compile error: ${e.message}` };
+    res.set("Content-Type", "application/pdf");
+    res.send(pdf);
+  } catch (err) {
+    res.status(500).send(`Compile error: ${err.message}`);
   }
 };
