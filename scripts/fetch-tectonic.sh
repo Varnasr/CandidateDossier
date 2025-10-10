@@ -1,36 +1,47 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Always fetch the MUSL build (static) to avoid glibc deps like libgraphite2.so.3
+# Always fetch the MUSL build to avoid glibc deps (e.g., libgraphite2.so.3)
 VER="0.15.0"
 TARGET="x86_64-unknown-linux-musl"
-NAME="tectonic-${VER}-${TARGET}"
 RELEASE_TAG="tectonic%40${VER}"
+ARCHIVE="tectonic-${VER}-${TARGET}.tar.gz"
 
-echo "Cleaning old binaries…"
-rm -rf netlify/functions/bin
-mkdir -p netlify/functions/bin
-cd netlify/functions/bin
+# Where we want the final binary
+OUT_DIR="netlify/functions/bin"
+OUT_BIN="${OUT_DIR}/tectonic"
 
-URL_MAIN="https://github.com/tectonic-typesetting/tectonic/releases/download/${RELEASE_TAG}/${NAME}.tar.gz"
+echo "[fetch-tectonic] Preparing output dir: ${OUT_DIR}"
+rm -rf "${OUT_DIR}"
+mkdir -p "${OUT_DIR}"
 
-echo "Downloading Tectonic (MUSL)…"
-curl -fsSL "$URL_MAIN" -o tt.tgz
+# Work in a temp dir to avoid name collisions
+WORKDIR="$(mktemp -d)"
+cleanup() { rm -rf "${WORKDIR}"; }
+trap cleanup EXIT
 
-echo "Extracting…"
+cd "${WORKDIR}"
+
+URL="https://github.com/tectonic-typesetting/tectonic/releases/download/${RELEASE_TAG}/${ARCHIVE}"
+echo "[fetch-tectonic] Downloading MUSL build: ${URL}"
+curl -fsSL "${URL}" -o tt.tgz
+
+echo "[fetch-tectonic] Extracting archive…"
 tar -xzf tt.tgz
 
-# Find the binary we just extracted (path varies slightly per release)
-BIN="$(find . -type f -name tectonic -perm -u+x | head -n1 || true)"
-if [ -z "$BIN" ]; then
-  BIN="$(find . -type f -name tectonic | head -n1 || true)"
+# Find the binary in the extracted tree (path layout can vary)
+BIN_PATH="$(find . -type f -name 'tectonic' -perm -u+x | head -n1 || true)"
+if [ -z "${BIN_PATH}" ]; then
+  # fallback: find even if not executable yet
+  BIN_PATH="$(find . -type f -name 'tectonic' | head -n1 || true)"
 fi
-if [ -z "$BIN" ]; then
-  echo "ERROR: tectonic binary not found in archive."; exit 1
+if [ -z "${BIN_PATH}" ]; then
+  echo "[fetch-tectonic] ERROR: tectonic binary not found in archive." >&2
+  exit 1
 fi
 
-mv "$BIN" ./tectonic
-chmod +x ./tectonic
-rm -rf ./*/ tt.tgz
+echo "[fetch-tectonic] Copying binary to ${OUT_BIN}"
+cp "${BIN_PATH}" "${OUT_BIN}"
+chmod +x "${OUT_BIN}"
 
-echo "Tectonic ready at $(pwd)/tectonic"
+echo "[fetch-tectonic] Done. Binary at ${OUT_BIN}"
