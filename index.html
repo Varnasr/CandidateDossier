@@ -79,4 +79,202 @@
     text-align: center;
     font-size: 0.85rem;
     padding: 1rem;
-    color: var(-
+    color: var(--text);
+    background: var(--mmsf-grey);
+  }
+</style>
+</head>
+<body data-theme="light">
+<header>
+  <div id="theme-toggle" title="Toggle theme">🌞</div>
+  <h1>उम्मीदवार दस्तावेज़ (Ummidvaar Dastaavez)</h1>
+  <p>Manmohan Singh Fellowship | CSV → LaTeX → PDF</p>
+</header>
+
+<main>
+  <section>
+    <h2>About this tool</h2>
+    <p>
+      This project standardises how candidate dossiers are created across districts. 
+      You upload a <strong>CSV</strong> with candidate details, the tool generates <strong>LaTeX blocks</strong>—uniformly formatted content sections—
+      and masks all phone numbers automatically. This ensures consistent structure, clean typography, 
+      and full privacy compliance under the Indian IT Act.
+    </p>
+  </section>
+
+  <section>
+    <h2>What the template should look like</h2>
+    <p>
+      The LaTeX template produces two parts:
+      <ul>
+        <li><strong>Candidate Data Blocks</strong> — auto-generated from your CSV (names, caste, education, rationale, etc.)</li>
+        <li><strong>Layout Block</strong> — the base file <code>main.tex</code> controlling margins, fonts, and section order.</li>
+      </ul>
+      Each block follows the same structure to keep dossiers comparable.
+    </p>
+  </section>
+
+  <section>
+    <h2>Why phone number masking is mandatory</h2>
+    <p>
+      Personal data in candidate lists is sensitive. Masking phone numbers protects privacy and complies with the 
+      <strong>Information Technology Act (2000)</strong> and related data protection rules. 
+      The masking process happens automatically during generation—you cannot disable it.
+    </p>
+  </section>
+
+  <section>
+    <h2>Process overview</h2>
+    <ol>
+      <li>Upload your candidate CSV (see sample below).</li>
+      <li>The system generates masked <code>candidate_blocks.tex</code>.</li>
+      <li>Click “Download candidate data block” and “Download layout block.”</li>
+      <li>In Overleaf: upload both, ensure <code>\input{candidate_blocks.tex}</code> appears in <code>main.tex</code>.</li>
+      <li>Compile in Overleaf → get your formatted PDF.</li>
+      <li>(Advanced users) Use Netlify serverless compile for one-click “Upload CSV → Get PDF”.</li>
+    </ol>
+    <p><a href="https://www.overleaf.com/" target="_blank">Open Overleaf →</a></p>
+  </section>
+
+  <section>
+    <h2>Try with a sample CSV</h2>
+    <pre>
+preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections
+1,Rajender Kumar Chaudhary,OBC,Jat,54,"Advocate & Farmer","BA, LLB, LLM (Pursuing)",1985,9012239999,,"Belief in Congress ideology; long family history.","College-days NSUI; administrative hold; strong proposer set.","—","Ram Singh (Ex HM, 5× MLA); Furkan Ahmed (MLA)","Ward President (2010–2015); DCC Member (2018–)","Contested Nagar Palika 2019 (Won); Assembly 2022 (Runner-up)"
+    </pre>
+    <input type="file" id="csvFile" accept=".csv">
+    <button class="button" id="generate">Generate LaTeX Blocks</button>
+  </section>
+
+  <section>
+    <h2>Generated LaTeX Blocks</h2>
+    <textarea id="latexOut" rows="12" readonly></textarea><br>
+    <button class="button" id="downloadLatex" disabled>Download candidate data block (.tex)</button>
+    <button class="button" id="downloadMain">Download layout block (main.tex)</button>
+    <button class="button" id="buildPdf" disabled>Upload CSV → Get PDF</button>
+  </section>
+</main>
+
+<footer>
+  उम्मीदवार दस्तावेज़ • Non-partisan • CC BY-NC-SA (content) • MIT (code) • No warranties
+</footer>
+
+<script>
+// theme toggle
+const toggle = document.getElementById("theme-toggle");
+toggle.addEventListener("click", () => {
+  const body = document.body;
+  const isLight = body.getAttribute("data-theme") === "light";
+  body.setAttribute("data-theme", isLight ? "dark" : "light");
+  toggle.textContent = isLight ? "🌙" : "🌞";
+});
+
+// CSV to LaTeX
+const csvFile = document.getElementById("csvFile");
+const generateBtn = document.getElementById("generate");
+const latexOut = document.getElementById("latexOut");
+const downloadBtn = document.getElementById("downloadLatex");
+const downloadMain = document.getElementById("downloadMain");
+const buildBtn = document.getElementById("buildPdf");
+
+function maskPhone(num){
+  return num.replace(/(\d{6})(\d{4})/, "******$2");
+}
+
+function parseCSV(text){
+  const rows = text.trim().split(/\r?\n/);
+  const headers = rows[0].split(",");
+  return rows.slice(1).map(r=>{
+    const vals = r.split(",");
+    const obj = {};
+    headers.forEach((h,i)=>obj[h]=vals[i]||"");
+    if(obj.phone) obj.phone = maskPhone(obj.phone);
+    return obj;
+  });
+}
+
+generateBtn.addEventListener("click", ()=>{
+  const file = csvFile.files[0];
+  if(!file){ alert("Please choose a CSV."); return; }
+  const reader = new FileReader();
+  reader.onload = e=>{
+    const data = parseCSV(e.target.result);
+    let out = "\\section{Candidate Preferences}\n";
+    data.forEach(d=>{
+      out += `\\subsection*{Preference ${d.preference} — ${d.name}}\n`;
+      out += "\\begin{tabularx}{\\linewidth}{@{}lY lY@{}}\n";
+      out += `\\textbf{Name} & ${d.name} & \\textbf{Category/Caste} & ${d.category}/${d.caste} \\\\\n`;
+      out += `\\textbf{Age} & ${d.age} & \\textbf{Occupation} & ${d.occupation} \\\\\n`;
+      out += `\\textbf{Education} & ${d.education} & \\textbf{Year Joined} & ${d.joined} \\\\\n`;
+      out += `\\textbf{Phone} & ${d.phone} & \\textbf{Record} & ${d.record} \\\\\n`;
+      out += "\\end{tabularx}\n\n";
+      out += `\\textbf{Rationale.} ${d.rationale}\n\n`;
+      out += `\\textbf{Strengths.} ${d.strengths}\n\n`;
+      out += `\\textbf{Weaknesses.} ${d.weaknesses}\n\n`;
+      out += `\\textbf{Proposers.} ${d.proposers}\n\n`;
+      out += `\\textbf{Positions Held.} ${d.positions}\n\n`;
+      out += `\\textbf{Elections Contested.} ${d.elections}\n\n`;
+      out += "\\vspace{8pt}\\hrule\\vspace{10pt}\n";
+    });
+    latexOut.value = out;
+    downloadBtn.disabled = false;
+    buildBtn.disabled = false;
+  };
+  reader.readAsText(file);
+});
+
+downloadBtn.addEventListener("click", ()=>{
+  const blob = new Blob([latexOut.value], {type: "text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "candidate_blocks.tex";
+  a.click();
+});
+
+downloadMain.addEventListener("click", ()=>{
+  const mainTex = `
+\\documentclass{article}
+\\usepackage[a4paper,margin=1in]{geometry}
+\\usepackage{tabularx,booktabs}
+\\begin{document}
+\\title{Candidate Dossier}
+\\maketitle
+\\input{candidate_blocks.tex}
+\\end{document}`;
+  const blob = new Blob([mainTex], {type: "text/plain"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "main.tex";
+  a.click();
+});
+
+// serverless compile fetch (Netlify)
+buildBtn.addEventListener("click", async ()=>{
+  try {
+    const resp = await fetch('/api/compile', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        mainTex: `
+\\documentclass{article}
+\\usepackage[a4paper,margin=1in]{geometry}
+\\usepackage{tabularx,booktabs}
+\\begin{document}
+\\title{Candidate Dossier}
+\\maketitle
+\\input{candidate_blocks.tex}
+\\end{document}`,
+        blocksTex: latexOut.value
+      })
+    });
+    if(!resp.ok){ alert('Compile failed'); return; }
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url; a.download = "dossier.pdf"; a.click();
+    URL.revokeObjectURL(url);
+  } catch(e){ alert("Error: "+e.message); }
+});
+</script>
+</body>
+</html>
