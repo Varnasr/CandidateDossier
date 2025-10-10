@@ -1,0 +1,7 @@
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/compile"
+  to = "/.netlify/functions/compile"
+  status = 200
