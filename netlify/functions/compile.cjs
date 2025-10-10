@@ -1,16 +1,15 @@
-// netlify/functions/compile.cjs
-const { spawn }   = require("node:child_process");
-const { writeFile, mkdtemp, readFile, access } = require("node:fs/promises");
-const { tmpdir }  = require("node:os");
-const { join }    = require("node:path");
+// netlify/functions/compile.js  (CommonJS, unbundled)
+const { spawn } = require("node:child_process");
+const { writeFile, mkdtemp, readFile, access } = require("node:fs").promises;
+const { tmpdir } = require("node:os");
+const { join } = require("node:path");
 
 async function resolveTectonicPath() {
   const candidates = [
-    join(__dirname, "bin/tectonic"),                       // bundled next to function
-    join(__dirname, "../bin/tectonic"),                    // sometimes one up
-    process.env.LAMBDA_TASK_ROOT &&                        // task root (Netlify packs here)
-      join(process.env.LAMBDA_TASK_ROOT, "netlify/functions/bin/tectonic"),
-    join(process.cwd(), "netlify/functions/bin/tectonic"), // cwd fallback
+    join(__dirname, "bin/tectonic"),                           // bundled next to function
+    join(__dirname, "../bin/tectonic"),                        // sometimes one up
+    process.env.LAMBDA_TASK_ROOT && join(process.env.LAMBDA_TASK_ROOT, "netlify/functions/bin/tectonic"),
+    join(process.cwd(), "netlify/functions/bin/tectonic"),     // fallback
   ].filter(Boolean);
 
   for (const p of candidates) {
@@ -19,12 +18,14 @@ async function resolveTectonicPath() {
   throw new Error("Tectonic binary not found. Tried:\n" + candidates.join("\n"));
 }
 
-exports.handler = async function(event, context) {
+exports.handler = async (event) => {
   try {
     if (event.httpMethod !== "POST") {
       return { statusCode: 405, body: "Method not allowed" };
     }
-    const { mainTex, blocksTex } = JSON.parse(event.body || "{}");
+    let body = {};
+    try { body = JSON.parse(event.body || "{}"); } catch { /**/ }
+    const { mainTex, blocksTex } = body;
     if (!mainTex || !blocksTex) {
       return { statusCode: 400, body: "mainTex and blocksTex required" };
     }
@@ -40,13 +41,11 @@ exports.handler = async function(event, context) {
     const tt = await resolveTectonicPath();
 
     const pdfBuf = await new Promise((resolve, reject) => {
-      const p = spawn(tt, ["-X", "compile", mainPath, "--outdir", outDir], {
-        stdio: ["ignore", "pipe", "pipe"]
-      });
+      const p = spawn(tt, ["-X", "compile", mainPath, "--outdir", outDir], { stdio: ["ignore", "pipe", "pipe"] });
       let stderr = "";
       p.stderr.on("data", d => { stderr += d.toString(); });
       p.on("error", reject);
-      p.on("close", async code => {
+      p.on("close", async (code) => {
         if (code !== 0) return reject(new Error(stderr || `tectonic exit ${code}`));
         try { resolve(await readFile(join(outDir, "main.pdf"))); }
         catch (e) { reject(e); }
