@@ -1,19 +1,21 @@
-// netlify/functions/compile.js  (CommonJS, unbundled)
+// CommonJS, unbundled. Writes ONLY to /tmp.
+// Requires: netlify.toml -> [functions] node_bundler = "none"
+
 const { spawn } = require("node:child_process");
-const { writeFile, mkdtemp, readFile, access } = require("node:fs").promises;
+const fs = require("node:fs").promises;
 const { tmpdir } = require("node:os");
 const { join } = require("node:path");
 
 async function resolveTectonicPath() {
+  const { access } = require("node:fs").promises;
   const candidates = [
-    join(__dirname, "bin/tectonic"),                           // bundled next to function
-    join(__dirname, "../bin/tectonic"),                        // sometimes one up
+    join(__dirname, "bin/tectonic"),
+    join(__dirname, "../bin/tectonic"),
     process.env.LAMBDA_TASK_ROOT && join(process.env.LAMBDA_TASK_ROOT, "netlify/functions/bin/tectonic"),
-    join(process.cwd(), "netlify/functions/bin/tectonic"),     // fallback
+    join(process.cwd(), "netlify/functions/bin/tectonic"),
   ].filter(Boolean);
-
   for (const p of candidates) {
-    try { await access(p); return p; } catch (_) {}
+    try { await access(p); return p; } catch {}
   }
   throw new Error("Tectonic binary not found. Tried:\n" + candidates.join("\n"));
 }
@@ -24,30 +26,40 @@ exports.handler = async (event) => {
       return { statusCode: 405, body: "Method not allowed" };
     }
     let body = {};
-    try { body = JSON.parse(event.body || "{}"); } catch { /**/ }
+    try { body = JSON.parse(event.body || "{}"); } catch {}
     const { mainTex, blocksTex } = body;
     if (!mainTex || !blocksTex) {
       return { statusCode: 400, body: "mainTex and blocksTex required" };
     }
 
-    const work     = await mkdtemp(join(tmpdir(), "tectonic-"));
-    const mainPath = join(work, "main.tex");
-    const blkPath  = join(work, "candidate_blocks.tex");
-    const outDir   = join(work, "out");
+    // All writes in /tmp
+    const base    = await fs.mkdtemp(join(tmpdir(), "tectonic-"));
+    const workDir = join(base, "work");
+    const outDir  = join(base, "out");
+    const cache   = join(base, "cache");
+    await fs.mkdir(workDir, { recursive: true });
+    await fs.mkdir(outDir,  { recursive: true });
+    await fs.mkdir(cache,   { recursive: true });
 
-    await writeFile(mainPath, mainTex, "utf8");
-    await writeFile(blkPath,  blocksTex, "utf8");
+    // Source files (inside /tmp)
+    await fs.writeFile(join(workDir, "main.tex"),            mainTex,   "utf8");
+    await fs.writeFile(join(workDir, "candidate_blocks.tex"), blocksTex, "utf8");
 
     const tt = await resolveTectonicPath();
 
+    // Run tectonic with cwd=/tmp/... and cache=/tmp/...
     const pdfBuf = await new Promise((resolve, reject) => {
-      const p = spawn(tt, ["-X", "compile", mainPath, "--outdir", outDir], { stdio: ["ignore", "pipe", "pipe"] });
+      const p = spawn(
+        tt,
+        ["-X", "compile", "main.tex", "--outdir", outDir, "--chatter", "minimal"],
+        { stdio: ["ignore", "pipe", "pipe"], cwd: workDir, env: { ...process.env, TECTONIC_CACHE_DIR: cache, TMPDIR: base } }
+      );
       let stderr = "";
       p.stderr.on("data", d => { stderr += d.toString(); });
       p.on("error", reject);
       p.on("close", async (code) => {
         if (code !== 0) return reject(new Error(stderr || `tectonic exit ${code}`));
-        try { resolve(await readFile(join(outDir, "main.pdf"))); }
+        try { resolve(await fs.readFile(join(outDir, "main.pdf"))); }
         catch (e) { reject(e); }
       });
     });
