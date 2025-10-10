@@ -1,0 +1,41 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Node / Netlify build artifacts (just in case)
+node_modules/
+.npm/
+npm-debug.log*
+*.log
+
+# Environment / secrets
+.env
+.env.*
+
+# LaTeX aux files (if anyone compiles locally)
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.xdv
+*.lof
+*.lot
+
+# PDFs generated locally
+*.pdf
+
+# Archives
+*.zip
+*.tar
+*.tar.gz
+
+# Editor settings
+.vscode/
+.idea/
