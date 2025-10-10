@@ -1,5 +1,11 @@
+[build]
+  command = "npm run build"
+  functions = "netlify/functions"
+
 [functions]
-  node_bundler = "esbuild"
+  # ship CJS without esbuild to avoid fileURLToPath shims
+  node_bundler = "none"
+  included_files = ["netlify/functions/bin/**"]
 
 [[redirects]]
   from = "/api/compile"
