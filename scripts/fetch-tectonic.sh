@@ -1,25 +1,36 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Version pin (Linux x86_64)
-TECTONIC_TGZ="tectonic-0.15.0+20251006-x86_64-unknown-linux-gnu.tar.gz"
-TECTONIC_URL="https://github.com/tectonic-typesetting/tectonic/releases/download/continuous/${TECTONIC_TGZ}"
+# Always fetch the MUSL build (static) to avoid glibc deps like libgraphite2.so.3
+VER="0.15.0"
+TARGET="x86_64-unknown-linux-musl"
+NAME="tectonic-${VER}-${TARGET}"
+RELEASE_TAG="tectonic%40${VER}"
 
-echo "==> Fetching Tectonic from ${TECTONIC_URL}"
-mkdir -p netlify/functions/bin /tmp/tectonic-dl
-curl -L --fail "${TECTONIC_URL}" -o /tmp/tectonic-dl/tectonic.tar.gz
+echo "Cleaning old binaries…"
+rm -rf netlify/functions/bin
+mkdir -p netlify/functions/bin
+cd netlify/functions/bin
 
-echo "==> Extracting"
-tar -xzf /tmp/tectonic-dl/tectonic.tar.gz -C /tmp/tectonic-dl
+URL_MAIN="https://github.com/tectonic-typesetting/tectonic/releases/download/${RELEASE_TAG}/${NAME}.tar.gz"
 
-# Find the 'tectonic' executable inside whatever directory the tar created
-TECTONIC_BIN="$(find /tmp/tectonic-dl -type f -name tectonic -maxdepth 3 | head -n1)"
-if [ -z "${TECTONIC_BIN}" ]; then
-  echo "ERROR: could not find 'tectonic' in archive" >&2
-  exit 1
+echo "Downloading Tectonic (MUSL)…"
+curl -fsSL "$URL_MAIN" -o tt.tgz
+
+echo "Extracting…"
+tar -xzf tt.tgz
+
+# Find the binary we just extracted (path varies slightly per release)
+BIN="$(find . -type f -name tectonic -perm -u+x | head -n1 || true)"
+if [ -z "$BIN" ]; then
+  BIN="$(find . -type f -name tectonic | head -n1 || true)"
+fi
+if [ -z "$BIN" ]; then
+  echo "ERROR: tectonic binary not found in archive."; exit 1
 fi
 
-echo "==> Installing to netlify/functions/bin/tectonic"
-cp "${TECTONIC_BIN}" netlify/functions/bin/tectonic
-chmod +x netlify/functions/bin/tectonic
-echo "==> Done"
+mv "$BIN" ./tectonic
+chmod +x ./tectonic
+rm -rf ./*/ tt.tgz
+
+echo "Tectonic ready at $(pwd)/tectonic"
