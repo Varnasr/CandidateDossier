@@ -8,7 +8,7 @@
 
 <style>
   :root{
-    /* MMSF Palette - Professional blues and golds */
+    /* Professional blue-gold palette optimized for government documents */
     --mmsf-blue:#1e3a8a;
     --mmsf-gold:#fbbf24;
     --mmsf-navy:#0f172a;
@@ -97,17 +97,47 @@
     <h2 style="color:var(--mmsf-blue)">What This Is & Why It Matters</h2>
     <p>
       This tool transforms structured <span class="hl">CSV data</span> into professional <span class="hl">PDF candidate dossiers</span> with LaTeX-quality typography, 
-      using the MMSF color palette. All phone numbers and emails are <strong>mandatorily masked</strong> for privacy protection.
+      using a professional blue and gold color palette optimized for government documentation. All phone numbers and emails are <strong>mandatorily masked</strong> for privacy protection.
+    </p>
+    <p>
+      <strong>Why this tool is necessary:</strong> Political organizations often rely on inconsistent Excel sheets, handwritten forms, or poorly formatted Word documents 
+      for candidate assessment. This leads to missing information, inconsistent evaluation criteria, and unprofessional documentation during critical selection processes.
     </p>
     <p class="muted small">
-      <strong>Required CSV columns:</strong><br/>
+      <strong>Required CSV columns (18 fields):</strong><br/>
       <code>preference, name, category, caste, age, gender, occupation, education, year_joined, phone, email, 
       criminal_record, rationale, strengths, weaknesses, proposers, positions_held, elections_contested</code>
     </p>
   </section>
 
   <section class="card">
+    <h2 style="color:var(--mmsf-blue)">Technical Features & PDF Output Quality</h2>
+    <p>
+      <strong>Professional PDF Features:</strong>
+    </p>
+    <ul style="margin-left:20px;line-height:1.8">
+      <li>📐 <strong>LaTeX-quality typography</strong> - Times New Roman body text with Arial headers for optimal readability</li>
+      <li>📊 <strong>Structured tabular layout</strong> - Information presented in bordered tables with alternating row colors</li>
+      <li>📄 <strong>One candidate per page</strong> - Easy filing and distribution for committee review</li>
+      <li>🎨 <strong>Professional color scheme</strong> - Deep blue (#1e3a8a) for headers, gold (#fbbf24) for accents</li>
+      <li>📏 <strong>A4 print optimization</strong> - Precise margins (20mm) and spacing for standard printing</li>
+      <li>🔢 <strong>Automatic page numbering</strong> - Sequential page numbers for document organization</li>
+      <li>📝 <strong>Section formatting</strong> - Clear visual hierarchy with underlined headers and justified text</li>
+    </ul>
+    <p style="margin-top:15px">
+      <strong>Technical Implementation:</strong> Pure client-side JavaScript with zero dependencies. Uses CSS print media queries for PDF generation,
+      ensuring consistent output across browsers. CSV parsing handles edge cases including quoted fields, commas within values, and various line endings (CRLF/LF).
+      UTF-8 encoding support ensures proper rendering of Hindi and regional language text.
+    </p>
+  </section>
+
+  <section class="card">
     <h2 style="color:var(--mmsf-blue)">Generate Professional PDF</h2>
+    <p style="margin-bottom:15px">
+      <strong>Why structured PDFs matter:</strong> Committee members need consistent formats to compare candidates fairly. 
+      This tool enforces standardization while maintaining professional presentation standards used in government documentation.
+      The blue-gold color scheme provides high contrast for readability while the tabular layout ensures quick information scanning.
+    </p>
     <div class="row">
       <div>
         <label><strong>Upload CSV File</strong></label>
@@ -120,7 +150,8 @@
       <div id="busy" class="muted" style="display:none">Processing...</div>
     </div>
     <div id="fileError" class="error"></div>
-    <p class="muted small">💡 <strong>Tip:</strong> Phone and email masking is automatic and mandatory for privacy compliance.</p>
+    <p class="muted small">💡 <strong>Privacy by Design:</strong> Phone masking (shows only last 4 digits) and email obfuscation (r***@domain) 
+    are hardcoded and cannot be disabled, ensuring compliance with data protection guidelines. No server upload means your data never leaves your computer.</p>
   </section>
 
   <section class="card">
@@ -129,7 +160,9 @@
   </section>
 
   <footer class="card muted small">
-    Non-partisan civic tool • Professional political candidate assessment system • Privacy-first design with mandatory data masking
+    <strong>Privacy & Compliance:</strong> Non-partisan civic tool for transparent candidate assessment • All personal data (phone/email) is automatically masked • 
+    No data is stored or transmitted - all processing happens locally in your browser • Compliant with Indian IT Act 2000 • 
+    Built with professional government documentation standards using a blue-gold color palette optimized for readability and print quality
   </footer>
 </div>
 
