@@ -1,0 +1,28 @@
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+
+# Editor directories and files
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Test data (if any)
+test_data/
+*.test.csv
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# User uploads (for privacy)
+uploads/
+user_data/
