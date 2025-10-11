@@ -6,49 +6,41 @@
 <title>Ummidvaar Dastaavez — Candidate Dossiers</title>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <style>
   :root{
-    --blue:#2b7bbb; --yellow:#ffd54d; --black:#111; --grey:#f2f2f2;
-    --bg:#fff; --fg:var(--black); --card:#fff; --border:#e6e6e6; --muted:#555;
+    --blue:#276fbf; --gold:#ffd54d; --ink:#111; --muted:#5b677a;
+    --bg:#ffffff; --card:#ffffff; --border:#e6e8ee; --soft:#f6f7fb;
   }
   [data-theme="dark"]{
-    --bg:#0f1115; --fg:#e8e8e8; --card:#151923; --border:#2a2f3a; --muted:#b9b9b9;
+    --bg:#0f1115; --card:#151923; --ink:#e9eef7; --muted:#b8c0cc;
+    --border:#2b3240; --soft:#1a2130; --blue:#61a8ff; --gold:#f6c84a;
   }
-  html,body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
-  .wrap{max-width:980px;margin:0 auto;padding:20px}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+  .wrap{max-width:1000px;margin:0 auto;padding:20px}
   header{display:flex;align-items:center;justify-content:space-between}
-  h1{margin:0;font-size:1.6rem}
+  h1{margin:0;font-size:1.7rem;letter-spacing:.2px}
   .sunmoon{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--border);background:var(--card);cursor:pointer}
   .sunmoon svg{width:18px;height:18px}
 
-  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;margin-top:14px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-top:14px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
   .muted{color:var(--muted)}
-  .hl{background:var(--grey);padding:2px 6px;border-radius:6px}
-  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--yellow);color:#000;border:none;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer}
+  .hl{background:var(--soft);padding:2px 6px;border-radius:6px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:#000;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
   .btn.secondary{background:var(--blue);color:#fff}
   input[type="file"]{display:block;margin-top:6px}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .error{border-left:4px solid #d33;background:#fff2f2;color:#7a0c0c;padding:10px;border-radius:8px;margin-top:10px}
+  .error{border-left:4px solid #d33;background:#fff2f2;color:#7a0c0c;padding:10px;border-radius:10px;margin-top:10px}
   [data-theme="dark"] .error{background:#2a1111;color:#ffd0d0}
 
-  /* Preview / printable document */
-  #pdfContainer{max-width:800px;margin:0 auto}
-  .sheet{page-break-after:always;border:1px solid var(--border);border-radius:8px;padding:18px;margin:12px 0;background:#fff;color:#000}
-  .sheet h2{margin:.2rem 0 0.6rem 0}
-  .kv{display:grid;grid-template-columns:160px 1fr 160px 1fr;gap:6px 10px}
+  #preview{max-width:860px;margin:0 auto}
+  .sheet{border:1px solid var(--border);border-radius:10px;padding:16px;margin:12px 0;background:#fff;color:#000}
+  [data-theme="dark"] .sheet{background:#fff;color:#000} /* keep print preview true-to-output */
+  .sheet h3{margin:.2rem 0 .6rem 0}
+  .kv{display:grid;grid-template-columns:170px 1fr 170px 1fr;gap:6px 12px}
   .kv strong{white-space:nowrap}
   hr{border:0;border-top:1px solid #ddd;margin:12px 0}
   .small{font-size:.92rem}
-
-  /* Print-quality path: vector text via browser print */
-  @media print {
-    @page { size: A4; margin: 10mm; }
-    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    .card, .wrap { border: 0 !important; box-shadow: none !important; }
-    .sheet { page-break-after: always; border: none; border-radius: 0; margin: 0; padding: 0; }
-    header, .controls, .error { display: none !important; }
-  }
 </style>
 </head>
 <body>
@@ -62,28 +54,39 @@
   </header>
 
   <section class="card">
-    <h2>Quick demo (no server needed)</h2>
-    <p>Upload the CSV with this exact header order (case/space/underscore tolerant):</p>
-    <div class="hl" style="overflow:auto"><code>preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections</code></div>
+    <h2>What this does and why it matters</h2>
+    <p>
+      This tool converts a structured <span class="hl">CSV</span> into a high-quality <span class="hl">PDF dossier</span> — one page (or more) per candidate —
+      with consistent typography, clear sections, and page numbers. Each CSV row becomes a reusable <em>content block</em>
+      so the design stays professional even as data changes.
+    </p>
+    <p><strong>Privacy-first:</strong> phone numbers are <strong>mandatorily masked</strong> to the last four digits (e.g., <code>******2345</code>).</p>
+    <div class="muted">
+      Required CSV headers (names are case/space/underscore tolerant):<br/>
+      <code>preference, name, category, caste, age, occupation, education, joined, phone, record, rationale, strengths, weaknesses, proposers, positions, elections</code>
+    </div>
+  </section>
 
-    <div class="row controls" style="margin-top:10px">
+  <section class="card">
+    <h2>Create the PDF</h2>
+    <div class="row controls">
       <div>
         <label><strong>Upload CSV</strong></label>
         <input id="csvFile" type="file" accept=".csv,text/csv"/>
       </div>
-      <button id="renderBtn" class="btn" disabled>Preview</button>
-      <button id="printBtn" class="btn" title="Best quality (vector)" disabled>Print-quality PDF</button>
-      <button id="downloadBtn" class="btn secondary" title="Fallback (raster PDF)" disabled>Download PDF</button>
+      <button id="downloadBtn" class="btn secondary" disabled>Download PDF</button>
+      <button id="previewBtn" class="btn" disabled>Preview on Page</button>
+      <a id="templateLink" class="btn" download="sample_candidate_data.csv">Download CSV Template</a>
+      <button id="samplePdfBtn" class="btn">Download Sample Output PDF</button>
       <div id="busy" class="muted" style="display:none">Working…</div>
     </div>
-
     <div id="fileError" class="error" style="display:none"></div>
-    <p class="muted small">Phone numbers are <strong>automatically masked</strong> (e.g., <code>******2345</code>) during rendering for privacy and IT-Act-aligned handling.</p>
+    <p class="muted small">Use your own CSV if headers match. Phone masking is automatic and cannot be turned off.</p>
   </section>
 
   <section class="card">
-    <h2>Preview</h2>
-    <div id="pdfContainer"></div>
+    <h2>Preview (optional)</h2>
+    <div id="preview"></div>
   </section>
 
   <footer class="card muted small">
@@ -93,7 +96,7 @@
 
 <script>
 (function(){
-  // Theme toggle
+  /* Theme */
   const app = document.getElementById('app'), sun = document.getElementById('sunIcon'), moon = document.getElementById('moonIcon');
   document.getElementById('themeToggle').addEventListener('click', ()=>{
     const cur = app.getAttribute('data-theme')==='dark' ? 'light':'dark';
@@ -101,115 +104,294 @@
     if(cur==='dark'){sun.style.display='none';moon.style.display='block';} else {sun.style.display='block';moon.style.display='none';}
   });
 
-  const REQUIRED = "preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections".split(',');
-  const csvInput = document.getElementById('csvFile');
-  const renderBtn = document.getElementById('renderBtn');
-  const printBtn = document.getElementById('printBtn');
-  const downloadBtn = document.getElementById('downloadBtn');
-  const fileError = document.getElementById('fileError');
-  const busy = document.getElementById('busy');
-  const pdfContainer = document.getElementById('pdfContainer');
-
-  let rows = [];
-
+  /* Schema */
+  const HEADERS = "preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections".split(',');
   const norm = s => String(s||'').trim().toLowerCase().replace(/\s+/g,'').replace(/_/g,'');
-  const esc  = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const escHTML  = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const maskPhone = v => { const d = String(v||'').replace(/\D/g,''); return d ? '******' + d.slice(-4) : ''; };
+
+  /* Template CSV */
+  const templateCSV = [
+    HEADERS.join(','),
+    '1,Anita Devi,SC,Mahadalit,34,Anganwadi Worker,Class 12,2012,9891123456,Active in SHG; no adverse records,"Strong community rapport; consistent attendance","Limited formal political experience","Sita Kumari; Renu Devi","Panchayat Education Committee Member","Contested Ward Member 2021"',
+    '2,Rahim Ansari,EBC,Ansari,41,Weaver,Class 10,2008,9876543210,No adverse records,"Respected artisan; youth engagement","Needs support for documentation","Salim Khan; Farida Bano","SHG Treasurer","Contested Ward Member 2016"',
+    '3,Sunita Kumari,General,Bhumihar,29,ASHA Worker,Graduate,2019,9123456789,No adverse records,"High field presence; women\\'s networks","Public speaking confidence","Meera Devi; Poonam Devi","School Management Committee","N/A"'
+  ].join('\\n');
+  const templateLink = document.getElementById('templateLink');
+  templateLink.href = URL.createObjectURL(new Blob([templateCSV], { type: 'text/csv' }));
+
+  /* Elements */
+  const csvInput    = document.getElementById('csvFile');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const previewBtn  = document.getElementById('previewBtn');
+  const samplePdfBtn= document.getElementById('samplePdfBtn');
+  const fileError   = document.getElementById('fileError');
+  const busy        = document.getElementById('busy');
+  const previewDiv  = document.getElementById('preview');
+  let rows = [];
 
   function showError(msg){ fileError.style.display='block'; fileError.textContent = msg; }
   function clearError(){ fileError.style.display='none'; fileError.textContent=''; }
   function setBusy(on){ busy.style.display = on ? 'inline':'none'; }
-  function enableButtons(on){ renderBtn.disabled = !on; printBtn.disabled = !on; downloadBtn.disabled = !on; }
+  function enableActions(on){ downloadBtn.disabled = !on; previewBtn.disabled = !on; }
 
+  /* Safer download helper (replaces doc.save for reliability) */
+  function downloadBlob(blob, filename){
+    try{
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(()=>URL.revokeObjectURL(url), 2000);
+    }catch(e){
+      showError('Browser blocked download: ' + (e?.message||e));
+    }
+  }
+
+  /* CSV upload */
   csvInput.addEventListener('change', ()=>{
-    clearError(); enableButtons(false); rows = [];
+    clearError(); enableActions(false); rows = [];
     const f = csvInput.files && csvInput.files[0];
     if(!f) return;
-    if(!/\.csv$/i.test(f.name)){ showError('Please upload a CSV (not PDF).'); return; }
-    if(f.size > 8 * 1024 * 1024){ showError('CSV too large (>8MB).'); return; }
+    if(!/\\.csv$/i.test(f.name)){ showError('Please upload a CSV (not PDF).'); return; }
+    if(f.size > 12 * 1024 * 1024){ showError('CSV too large (>12MB).'); return; }
 
     Papa.parse(f, {
       header:true, skipEmptyLines:true, transformHeader:h=>norm(h),
       complete: res=>{
         if(res.errors && res.errors.length){ showError('CSV parse error: ' + res.errors[0].message); return; }
-        const fields = (res.meta.fields||[]).map(norm);
-        const backMap = {};
-        REQUIRED.forEach(k=>{ const nk = norm(k); const idx = fields.indexOf(nk); backMap[k] = idx===-1 ? null : res.meta.fields[idx]; });
-        const missing = REQUIRED.filter(k => backMap[k]===null);
-        if(missing.length){ showError('CSV missing columns: ' + missing.join(', ')); return; }
+        const fieldsNorm = (res.meta.fields||[]).map(norm);
+        const backMap = {}; HEADERS.forEach(k=>{ const nk = norm(k); const idx = fieldsNorm.indexOf(nk); backMap[k] = idx===-1 ? null : res.meta.fields[idx]; });
+        const missing = HEADERS.filter(k => backMap[k]===null);
+        if(missing.length){ showError('CSV missing required columns: ' + missing.join(', ')); return; }
 
-        rows = (res.data||[]).map(r=>{
-          const o = {}; REQUIRED.forEach(k => o[k] = r[ backMap[k] ] ?? '' ); return o;
-        }).filter(r => Object.values(r).some(v => String(v).trim()!==''));
+        rows = (res.data||[]).map(r=>{ const o = {}; HEADERS.forEach(k => { const src = backMap[k]; o[k] = src ? r[src] : ''; }); return o; })
+                             .filter(r => Object.values(r).some(v => String(v).trim()!==''));
         if(!rows.length){ showError('CSV has 0 data rows.'); return; }
-
-        enableButtons(true);
+        enableActions(true);
       }
     });
   });
 
-  function renderPreview(){
-    pdfContainer.innerHTML = '';
+  /* Optional preview */
+  previewBtn.addEventListener('click', ()=>{
+    clearError(); previewDiv.innerHTML = '';
     rows.forEach((r, i)=>{
-      const sheet = document.createElement('div'); sheet.className = 'sheet';
-      sheet.innerHTML = `
-        <h2>${i+1}. ${esc(r.name||'Unnamed')} <span class="muted small">(${esc(r.category||'')}${r.caste?'/'+esc(r.caste):''})</span></h2>
+      const el = document.createElement('div'); el.className = 'sheet';
+      el.innerHTML = `
+        <h3>${i+1}. ${escHTML(r.name||'Unnamed')} <span class="muted small">(${escHTML(r.category||'')}${r.caste?'/'+escHTML(r.caste):''})</span></h3>
         <div class="kv small">
-          <strong>Name</strong><div>${esc(r.name||'')}</div>
-          <strong>Category/Caste</strong><div>${esc(r.category||'')}${r.caste?'/'+esc(r.caste):''}</div>
-          <strong>Age</strong><div>${esc(r.age||'')}</div>
-          <strong>Occupation</strong><div>${esc(r.occupation||'')}</div>
-          <strong>Education</strong><div>${esc(r.education||'')}</div>
-          <strong>Year Joined</strong><div>${esc(r.joined||'')}</div>
-          <strong>Phone</strong><div>${esc(maskPhone(r.phone))}</div>
-          <strong>Record</strong><div>${esc(r.record||'')}</div>
+          <strong>Name</strong><div>${escHTML(r.name||'')}</div>
+          <strong>Category/Caste</strong><div>${escHTML(r.category||'')}${r.caste?'/'+escHTML(r.caste):''}</div>
+          <strong>Age</strong><div>${escHTML(r.age||'')}</div>
+          <strong>Occupation</strong><div>${escHTML(r.occupation||'')}</div>
+          <strong>Education</strong><div>${escHTML(r.education||'')}</div>
+          <strong>Year Joined</strong><div>${escHTML(r.joined||'')}</div>
+          <strong>Phone</strong><div>${escHTML(maskPhone(r.phone))}</div>
+          <strong>Record</strong><div>${escHTML(r.record||'')}</div>
         </div>
         <hr/>
-        <div class="small"><strong>Rationale.</strong> ${esc(r.rationale||'')}</div>
-        <div class="small"><strong>Strengths.</strong> ${esc(r.strengths||'')}</div>
-        <div class="small"><strong>Weaknesses.</strong> ${esc(r.weaknesses||'')}</div>
-        <div class="small"><strong>Proposers.</strong> ${esc(r.proposers||'')}</div>
-        <div class="small"><strong>Positions Held.</strong> ${esc(r.positions||'')}</div>
-        <div class="small"><strong>Elections Contested.</strong> ${esc(r.elections||'')}</div>
+        <div class="small"><strong>Rationale.</strong> ${escHTML(r.rationale||'')}</div>
+        <div class="small"><strong>Strengths.</strong> ${escHTML(r.strengths||'')}</div>
+        <div class="small"><strong>Weaknesses.</strong> ${escHTML(r.weaknesses||'')}</div>
+        <div class="small"><strong>Proposers.</strong> ${escHTML(r.proposers||'')}</div>
+        <div class="small"><strong>Positions Held.</strong> ${escHTML(r.positions||'')}</div>
+        <div class="small"><strong>Elections Contested.</strong> ${escHTML(r.elections||'')}</div>
       `;
-      pdfContainer.appendChild(sheet);
+      previewDiv.appendChild(el);
     });
+  });
+
+  /* PDF builder */
+  function buildPdf(fromRows){
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit:'mm', format:'a4', compress:true });
+
+    const pageW = doc.internal.pageSize.getWidth();
+    const pageH = doc.internal.pageSize.getHeight();
+    const M = { l:14, r:14, t:16, b:16 };
+    const W = pageW - M.l - M.r;
+    const BLUE = [39,111,191], GOLD=[255,213,77], GREY=[230,232,238], INK=[20,24,31];
+
+    const header = () => {
+      doc.setDrawColor(...BLUE); doc.setLineWidth(0.7);
+      doc.line(M.l, M.t-6, pageW - M.r, M.t-6);
+      doc.setFont('helvetica','bold'); doc.setFontSize(11);
+      doc.setTextColor(...INK);
+      doc.text('Candidate Dossier', M.l, M.t-8);
+    };
+    const footerAll = () => {
+      const n = doc.getNumberOfPages();
+      for(let i=1;i<=n;i++){
+        doc.setPage(i);
+        doc.setFont('helvetica','normal'); doc.setFontSize(9);
+        doc.setTextColor(90,90,90);
+        doc.text(`Page ${i} of ${n}`, pageW - M.r, pageH - 6, { align:'right' });
+      }
+    };
+
+    const badge = (label, y) => {
+      doc.setDrawColor(...GOLD); doc.setFillColor(...GOLD);
+      doc.rect(M.l, y-5, 14, 2.2, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...INK);
+      doc.text(label + '.', M.l + 18, y-3.3);
+    };
+
+    const kvGrid = (pairs, y) => {
+      const gap = 6;
+      const Lw = 36, Vw = (W/2) - Lw - gap;
+      const Lw2 = 36, Vw2 = (W/2) - Lw2 - gap;
+      const x1 = M.l, x2 = M.l + Lw + Vw + gap*2;
+
+      const draw = (lab, val, x, w) => {
+        doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...INK);
+        doc.text(lab, x, y);
+        doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(35,38,45);
+        const wrap = doc.splitTextToSize(String(val||''), w);
+        wrap.forEach((line, i)=> doc.text(line, x, y + 4.8 + i*4.8));
+        return 4.8 + wrap.length*4.8 + 2;
+      };
+
+      const rows = [];
+      for(let i=0;i<pairs.length;i+=2) rows.push([pairs[i], pairs[i+1] || ['','']]);
+
+      rows.forEach(([a,b])=>{
+        const h1 = draw(a[0], a[1], x1, Vw);
+        const h2 = draw(b[0], b[1], x2, Vw2);
+        const h = Math.max(h1,h2);
+        y += h;
+        if(y > pageH - M.b - 30){ doc.addPage(); header(); y = M.t; }
+      });
+
+      doc.setDrawColor(...GREY); doc.setLineWidth(0.25);
+      doc.line(M.l, y, pageW - M.r, y);
+      return y + 3;
+    };
+
+    const paragraph = (text, y) => {
+      doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(35,38,45);
+      const lines = doc.splitTextToSize(String(text||''), W);
+      let yy = y + 2;
+      for(const line of lines){
+        if(yy > pageH - M.b){ doc.addPage(); header(); yy = M.t; }
+        doc.text(line, M.l, yy);
+        yy += 4.8;
+      }
+      return yy + 2;
+    };
+
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
+    doc.setFont('helvetica','bold'); doc.setFontSize(22); doc.setTextColor(...INK);
+    doc.text('Candidate Dossiers', M.l, 52);
+    doc.setDrawColor(...BLUE); doc.setLineWidth(1.4);
+    doc.line(M.l, 56, pageW - M.r, 56);
+    doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor(40,44,52);
+    doc.text(`Prepared: ${dateStr}`, M.l, 70);
+    doc.text(`Total candidates: ${fromRows.length}`, M.l, 78);
+    doc.addPage();
+
+    let first = true;
+    fromRows.forEach((r, idx)=>{
+      if(!first) doc.addPage(); first=false;
+      header();
+
+      let y = M.t + 7;
+      doc.setDrawColor(...BLUE); doc.setFillColor(...BLUE);
+      doc.rect(M.l, y-6, 3, 10, 'F');
+      doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(...INK);
+      doc.text(`${idx+1}. ${r.name || 'Unnamed'}`, M.l + 6, y);
+      doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(60,65,73);
+      doc.text(`${[r.category||'', r.caste||''].filter(Boolean).join('/')}`, M.l + 6, y+6);
+
+      doc.setDrawColor(...BLUE); doc.setLineWidth(0.6);
+      doc.line(M.l, y+8, pageW - M.r, y+8);
+      y += 14;
+
+      const kv = [
+        ['Name', r.name],
+        ['Category/Caste', [r.category, r.caste].filter(Boolean).join('/')],
+        ['Age', r.age],
+        ['Occupation', r.occupation],
+        ['Education', r.education],
+        ['Year Joined', r.joined],
+        ['Phone', r.phone ? (r.phone) : ''],
+        ['Record', r.record]
+      ];
+      kv[6][1] = (function(v){ const d = String(v||'').replace(/\\D/g,''); return d?('******'+d.slice(-4)):""; })(kv[6][1]);
+      y = kvGrid(kv, y);
+
+      if(r.rationale){ badge('Rationale', y); y = paragraph(r.rationale, y+2); }
+      if(r.strengths){ badge('Strengths', y); y = paragraph(r.strengths, y+2); }
+      if(r.weaknesses){ badge('Weaknesses', y); y = paragraph(r.weaknesses, y+2); }
+      if(r.proposers){ badge('Proposers', y); y = paragraph(r.proposers, y+2); }
+      if(r.positions){ badge('Positions Held', y); y = paragraph(r.positions, y+2); }
+      if(r.elections){ badge('Elections Contested', y); y = paragraph(r.elections, y+2); }
+    });
+
+    const blob = doc.output('blob'); // <-- use Blob rather than doc.save
+    return blob;
   }
 
-  document.getElementById('renderBtn').addEventListener('click', ()=>{
-    clearError(); setBusy(true);
-    try { renderPreview(); }
-    catch(e){ showError('Render error: ' + (e?.message||e)); }
-    finally { setBusy(false); }
-  });
-
-  // Vector, print-quality export (browser print dialog)
-  document.getElementById('printBtn').addEventListener('click', ()=>{
+  /* Download from uploaded CSV (Blob method) */
+  downloadBtn.addEventListener('click', ()=>{
     clearError();
-    if(!pdfContainer.children.length) renderPreview();
-    window.print(); // Choose "Save as PDF" + enable "Background graphics"
+    if(!rows.length){ showError('Please upload a CSV first.'); return; }
+    setBusy(true);
+    try {
+      const blob = buildPdf(rows);
+      downloadBlob(blob, 'candidate_dossiers.pdf');
+    } catch(e){
+      showError('PDF generation failed: ' + (e?.message||e));
+    } finally { setBusy(false); }
   });
 
-  // Rasterized fallback export (html2pdf)
-  document.getElementById('downloadBtn').addEventListener('click', async ()=>{
-    clearError(); setBusy(true);
-    try {
-      if(!pdfContainer.children.length) renderPreview();
-      const opt = {
-        margin:       [10,10,10,10],
-        filename:     'candidate_dossiers.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['css','legacy'] }
-      };
-      await html2pdf().from(pdfContainer).set(opt).save();
-    } catch(e){
-      showError('PDF export failed: ' + (e?.message||e));
-    } finally {
-      setBusy(false);
+  /* Sample Output PDF (Blob method; generated on the fly to stay in sync) */
+  samplePdfBtn.addEventListener('click', ()=>{
+    try{
+      const sampleRows = Papa.parse(templateCSV, { header:true }).data;
+      const blob = buildPdf(sampleRows);
+      downloadBlob(blob, 'sample_output.pdf');
+    }catch(e){
+      showError('Sample PDF failed: ' + (e?.message||e));
     }
   });
+
+  /* Preview */
+  previewBtn.addEventListener('click', ()=>{
+    clearError(); previewDiv.innerHTML = '';
+    rows.forEach((r, i)=>{
+      const el = document.createElement('div'); el.className = 'sheet';
+      el.innerHTML = `
+        <h3>${i+1}. ${escHTML(r.name||'Unnamed')} <span class="muted small">(${escHTML(r.category||'')}${r.caste?'/'+escHTML(r.caste):''})</span></h3>
+        <div class="kv small">
+          <strong>Name</strong><div>${escHTML(r.name||'')}</div>
+          <strong>Category/Caste</strong><div>${escHTML(r.category||'')}${r.caste?'/'+escHTML(r.caste):''}</div>
+          <strong>Age</strong><div>${escHTML(r.age||'')}</div>
+          <strong>Occupation</strong><div>${escHTML(r.occupation||'')}</div>
+          <strong>Education</strong><div>${escHTML(r.education||'')}</div>
+          <strong>Year Joined</strong><div>${escHTML(r.joined||'')}</div>
+          <strong>Phone</strong><div>${escHTML(maskPhone(r.phone))}</div>
+          <strong>Record</strong><div>${escHTML(r.record||'')}</div>
+        </div>
+        <hr/>
+        <div class="small"><strong>Rationale.</strong> ${escHTML(r.rationale||'')}</div>
+        <div class="small"><strong>Strengths.</strong> ${escHTML(r.strengths||'')}</div>
+        <div class="small"><strong>Weaknesses.</strong> ${escHTML(r.weaknesses||'')}</div>
+        <div class="small"><strong>Proposers.</strong> ${escHTML(r.proposers||'')}</div>
+        <div class="small"><strong>Positions Held.</strong> ${escHTML(r.positions||'')}</div>
+        <div class="small"><strong>Elections Contested.</strong> ${escHTML(r.elections||'')}</div>
+      `;
+      previewDiv.appendChild(el);
+    });
+  });
+
+  /* Kill any old service worker so stale HTML can't persist */
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+  }
 })();
 </script>
 </body>
