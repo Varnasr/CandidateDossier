@@ -1,20 +1,37 @@
-\documentclass{article}
+\documentclass[12pt]{article}
+
+% Basic, Tectonic-friendly preamble (no exotic fonts needed)
 \usepackage[a4paper,margin=1in]{geometry}
-\usepackage{tabularx,booktabs}
-\usepackage{titlesec}
+\usepackage{tabularx,array}
 \usepackage{hyperref}
-\usepackage{lmodern}
-\titleformat{\section}{\large\bfseries}{}{0pt}{}
-\titleformat{\subsection}{\normalsize\bfseries}{}{0pt}{}
-\hypersetup{colorlinks=true, linkcolor=black, urlcolor=blue}
+\usepackage{bookmark} % safer TOC/bookmarks
+\usepackage{lmodern}  % clean default fonts
+
+% A handy ragged-right column for tabularx
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% Title
+\title{Candidate Dossier}
+\author{Ummidvaar Dastaavez}
+\date{\today}
+
 \begin{document}
-\begin{center}
-{\LARGE Candidate Dossier}\\[4pt]
-{\large \textit{Ummidvaar Dastaavez}}\\[6pt]
-{\small MMSF palette • Phones masked • CSV $\rightarrow$ LaTeX $\rightarrow$ PDF}
-\end{center}
-\bigskip
+\maketitle
 \tableofcontents
 \bigskip
-\input{candidate_blocks.tex}
+
+% --- Safety guard so an empty/malformed blocks file won't crash ---
+\begingroup
+  \newif\ifBlocksOK
+  \BlocksOKtrue
+  % Try to input the blocks; if missing, fall back to a note.
+  \IfFileExists{candidate_blocks.tex}{%
+    \section*{Candidate Blocks}
+    \input{candidate_blocks.tex}
+  }{%
+    \section*{Candidate Blocks}
+    \noindent\textit{No candidate blocks were provided. Upload a CSV in the app to generate them.}
+  }
+\endgroup
+
 \end{document}
