@@ -295,86 +295,189 @@
       
       pages.push(`
         <div class="print-page">
-          <div class="watermark">MMSF Format • Privacy Protected</div>
+          <div class="watermark">CSV → LaTeX → PDF</div>
           
           <div class="print-header">
             <h1 class="print-title">Candidate Dossier</h1>
-            <div class="print-subtitle">Ummidvaar Dastaavez • ${dateStr}</div>
+            <div class="print-subtitle">Ummidvaar Dastaavez</div>
           </div>
           
-          <div class="cat-badge">Preference ${r.preference || (idx+1)} — ${categoryInfo}</div>
+          <div class="cat-badge">Preference ${r.preference || (idx+1)}</div>
           
-          <h2 style="margin:0 0 5mm 0;color:#1e3a8a;font-size:18pt;">${esc(r.name || 'Name Not Provided')}</h2>
+          <h2 class="candidate-name">${esc(r.name || 'Name Not Provided')}</h2>
           
-          <div class="info-grid">
-            <div class="label">Name</div><div class="value">${esc(r.name||'—')}</div>
-            <div class="label">Category/Caste</div><div class="value">${categoryInfo}</div>
-            <div class="label">Age</div><div class="value">${esc(r.age||'—')} ${r.gender ? '(' + esc(r.gender) + ')' : ''}</div>
-            <div class="label">Occupation</div><div class="value">${esc(r.occupation||'—')}</div>
-            <div class="label">Education</div><div class="value">${esc(r.education||'—')}</div>
-            <div class="label">Year Joined</div><div class="value">${esc(r.year_joined||'—')}</div>
-            <div class="label">Phone</div><div class="value">${esc(maskPhone(r.phone))}</div>
-            <div class="label">Email</div><div class="value">${esc(maskEmail(r.email))}</div>
-          </div>
-          
-          ${r.criminal_record ? `
-          <div class="section">
-            <div class="section-header"><div class="gold-bar"></div><span>Criminal Record</span></div>
-            <div class="section-content">${esc(r.criminal_record)}</div>
-          </div>` : ''}
+          <table class="info-table">
+            <tr>
+              <td class="label">Name</td><td class="value">${esc(r.name||'—')}</td>
+              <td class="label">Category/Caste</td><td class="value">${categoryInfo}</td>
+            </tr>
+            <tr>
+              <td class="label">Age</td><td class="value">${esc(r.age||'—')}</td>
+              <td class="label">Gender</td><td class="value">${esc(r.gender||'—')}</td>
+            </tr>
+            <tr>
+              <td class="label">Occupation</td><td class="value">${esc(r.occupation||'—')}</td>
+              <td class="label">Education</td><td class="value">${esc(r.education||'—')}</td>
+            </tr>
+            <tr>
+              <td class="label">Year Joined</td><td class="value">${esc(r.year_joined||'—')}</td>
+              <td class="label">Phone</td><td class="value">${esc(maskPhone(r.phone))}</td>
+            </tr>
+            <tr>
+              <td class="label">Email</td><td class="value" colspan="3">${esc(maskEmail(r.email))}</td>
+            </tr>
+            <tr>
+              <td class="label">Criminal Record</td><td class="value" colspan="3">${esc(r.criminal_record||'No records')}</td>
+            </tr>
+          </table>
           
           ${r.rationale ? `
           <div class="section">
-            <div class="section-header"><div class="gold-bar"></div><span>Rationale</span></div>
+            <div class="section-header">Rationale</div>
             <div class="section-content">${esc(r.rationale)}</div>
           </div>` : ''}
           
           ${r.strengths ? `
           <div class="section">
-            <div class="section-header"><div class="gold-bar"></div><span>Strengths</span></div>
+            <div class="section-header">Strengths</div>
             <div class="section-content">${esc(r.strengths)}</div>
           </div>` : ''}
           
           ${r.weaknesses ? `
           <div class="section">
-            <div class="section-header"><div class="gold-bar"></div><span>Weaknesses</span></div>
+            <div class="section-header">Weaknesses</div>
             <div class="section-content">${esc(r.weaknesses)}</div>
           </div>` : ''}
           
           ${r.proposers ? `
           <div class="section">
-            <div class="section-header"><div class="gold-bar"></div><span>Proposers</span></div>
+            <div class="section-header">Proposers</div>
             <div class="section-content">${esc(r.proposers)}</div>
           </div>` : ''}
           
           ${r.positions_held ? `
           <div class="section">
-            <div class="section-header"><div class="gold-bar"></div><span>Positions Held</span></div>
+            <div class="section-header">Positions Held</div>
             <div class="section-content">${esc(r.positions_held)}</div>
           </div>` : ''}
           
           ${r.elections_contested ? `
           <div class="section">
-            <div class="section-header"><div class="gold-bar"></div><span>Elections Contested</span></div>
+            <div class="section-header">Elections Contested</div>
             <div class="section-content">${esc(r.elections_contested)}</div>
           </div>` : ''}
           
-          <div class="pagenum">Page ${idx + 1}</div>
+          <div class="pagenum">${idx + 1}</div>
         </div>
       `);
     });
 
-    const css = document.querySelector('style').innerHTML;
+    const printStyles = `
+      @page { size: A4; margin: 0; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font-family: 'Times New Roman', Georgia, serif; background: white; color: #000; }
+      .print-page { 
+        width: 210mm; 
+        min-height: 297mm; 
+        padding: 20mm 18mm; 
+        page-break-after: always;
+        position: relative;
+      }
+      .watermark {
+        position: absolute;
+        top: 10mm;
+        right: 18mm;
+        font: 8pt Arial, sans-serif;
+        color: #999;
+      }
+      .print-header {
+        border-bottom: 3px solid #1e3a8a;
+        padding-bottom: 5mm;
+        margin-bottom: 8mm;
+      }
+      .print-title {
+        font: bold 22pt Arial, sans-serif;
+        color: #1e3a8a;
+        margin: 0;
+      }
+      .print-subtitle {
+        font: 10pt Arial, sans-serif;
+        color: #666;
+        margin-top: 2mm;
+      }
+      .cat-badge {
+        display: inline-block;
+        background: #fbbf24;
+        color: #000;
+        padding: 2mm 4mm;
+        font: bold 10pt Arial, sans-serif;
+        border-radius: 2mm;
+        margin-bottom: 5mm;
+      }
+      .candidate-name {
+        font: bold 18pt Arial, sans-serif;
+        color: #1e3a8a;
+        margin: 0 0 8mm 0;
+      }
+      .info-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 10mm;
+        font-size: 11pt;
+      }
+      .info-table td {
+        padding: 2mm 3mm;
+        border: 1px solid #ddd;
+      }
+      .info-table .label {
+        font-weight: bold;
+        font-family: Arial, sans-serif;
+        background: #f8f9fa;
+        width: 25%;
+        font-size: 10pt;
+      }
+      .info-table .value {
+        font-family: 'Times New Roman', serif;
+        font-size: 11pt;
+      }
+      .section {
+        margin-top: 6mm;
+      }
+      .section-header {
+        font: bold 11pt Arial, sans-serif;
+        color: #1e3a8a;
+        border-bottom: 2px solid #fbbf24;
+        padding-bottom: 1mm;
+        margin-bottom: 2mm;
+      }
+      .section-content {
+        font: 11pt/1.5 'Times New Roman', serif;
+        color: #333;
+        text-align: justify;
+      }
+      .pagenum {
+        position: absolute;
+        bottom: 10mm;
+        right: 18mm;
+        font: 9pt Arial, sans-serif;
+        color: #666;
+      }
+      @media print {
+        body { margin: 0; }
+      }
+    `;
+    
     const html = `
+      <!DOCTYPE html>
       <html>
       <head>
         <meta charset="utf-8"/>
         <title>Candidate Dossiers - ${dateStr}</title>
-        <style>${css}</style>
+        <style>${printStyles}</style>
       </head>
       <body>
-        <div class="print-wrap">${pages.join('')}</div>
-        <script>setTimeout(function(){window.print()},500)</${'script'}>
+        ${pages.join('')}
+        <script>setTimeout(function(){window.print()},300)</${'script'}>
       </body>
       </html>
     `;
