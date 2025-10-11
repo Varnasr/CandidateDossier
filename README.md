@@ -1,166 +1,208 @@
-
 # उम्मीदवार दस्तावेज़ (Ummidvaar Dastaavez)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![License: CC BY-NC-SA 4.0](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/your-badge-id/deploy-status)](https://app.netlify.com/sites/ummidvaar-dastaavez/deploys)
 
-**CSV → LaTeX → PDF candidate dossier generator** using the **Manmohan Singh Fellowship** colour palette.  
-Privacy-first: **phone numbers are always masked**. Works with **Overleaf** or via **Netlify Functions** for one-click PDF generation.
+**CSV → PDF candidate dossier generator** with professional formatting.  
+Privacy-first: **phone numbers and emails are always masked**. Pure client-side solution - no server required.
 
 ---
 
 ## 🎯 Purpose
 
 District teams often struggle with inconsistent candidate forms and poorly formatted PDFs.  
-This tool separates **content** (CSV) from **presentation** (LaTeX), enabling standardised, print-ready candidate dossiers.
+This tool transforms structured CSV data into professional, LaTeX-quality PDF dossiers with consistent formatting.
 
-You simply upload a structured CSV, review automatically generated LaTeX blocks, and either:
-1. Compile on **Overleaf** (manual but flexible), or  
-2. Use the **Netlify-hosted build** to instantly get a PDF.
+You simply upload a structured CSV and get print-ready PDFs with one candidate per page, professional typography, and automatic privacy protection.
 
 ---
 
-## 🧩 Two Ways to Use
+## 🚀 Live Demo
 
-### A. Overleaf (no setup required)
-1. Prepare your CSV (see “CSV schema” below).  
-2. On the site, upload your CSV → click **Generate LaTeX Blocks**.  
-3. Download two files:
-   - **`candidate_blocks.tex`**
-   - **`main.tex`** (layout template)
-4. Go to [Overleaf](https://www.overleaf.com/).  
-5. Create a new project and upload both `.tex` files.  
-6. Ensure that inside `main.tex`, the line  
-   ```latex
-   \input{candidate_blocks.tex}
-````
-
-appears where you want the candidate details inserted.
-7. Compile → Download PDF.
+Visit: [https://yourusername.github.io/ummidvaar-dastaavez/](https://yourusername.github.io/ummidvaar-dastaavez/)
 
 ---
 
-### B. Netlify One-Click PDF (serverless)
+## 🧩 How to Use
 
-1. This repo includes a Netlify Function `/api/compile`.
-2. When you deploy to Netlify, the build script (`scripts/fetch-tectonic.sh`) **downloads the Tectonic LaTeX engine** automatically.
-3. On the site, after generating LaTeX blocks, click **Upload CSV → Get PDF**.
-4. The compiled dossier PDF downloads instantly.
+1. **Download the CSV template** from the application
+2. **Fill in candidate data** with all required fields
+3. **Upload your CSV file** to the web interface
+4. **Click "Generate PDF"** to open print dialog
+5. **Save as PDF** from your browser's print dialog
+
+No installation, no server, no dependencies - everything runs in your browser.
 
 ---
 
-## 🧱 Repo Structure
+## 🧱 Repository Structure
 
 ```
 .
-├── index.html                  # Web app (CSV → LaTeX blocks; masking enforced)
-├── netlify.toml                # Routes /api/compile → function
-├── package.json                # Build step: fetches Tectonic binary
-├── netlify/
-│   └── functions/
-│       ├── compile.js          # Serverless: runs Tectonic to produce PDF
-│       └── bin/                # (filled at build) tectonic binary goes here
-├── scripts/
-│   └── fetch-tectonic.sh       # Downloads Linux x86_64 Tectonic during build
-├── .gitignore
-└── README.md
+├── index.html                  # Complete web application (HTML/CSS/JS)
+├── README.md                   # This file
+├── LICENSE                     # MIT License
+├── .gitignore                  # Git ignore rules
+└── samples/
+    ├── candidate_template.csv  # Empty template with headers
+    └── sample_data.csv         # Example with filled data
 ```
 
 ---
 
 ## 🧾 CSV Schema
 
-The CSV should have these exact headers:
+The CSV must have these exact headers (18 fields):
 
 ```
-preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections
+preference,name,category,caste,age,gender,occupation,education,year_joined,phone,email,criminal_record,rationale,strengths,weaknesses,proposers,positions_held,elections_contested
 ```
 
-Each row is one candidate.
+### Field Descriptions:
 
-Example row:
-
-```
-1,"Rajender Kumar Chaudhary","OBC","Jat",54,"Advocate & Farmer","BA, LLB, LLM (Pursuing)",1985,9012239999,,"Belief in Congress ideology; long family history.","College-days NSUI; administrative hold; strong proposer set.","—","Ram Singh (Ex HM, 5× MLA); Furkan Ahmed (MLA)","Ward President (2010–2015); DCC Member (2018–)","Contested Nagar Palika 2019 (Won); Assembly 2022 (Runner-up)"
-```
+| Field | Description | Example |
+|-------|-------------|---------|
+| preference | Priority order (1,2,3...) | 1 |
+| name | Full candidate name | "Rajender Kumar Chaudhary" |
+| category | Reservation category | OBC |
+| caste | Caste/Community | Jat |
+| age | Age in years | 54 |
+| gender | Gender | Male |
+| occupation | Current occupation | "Advocate/Farmer" |
+| education | Educational qualifications | "BA, LLB, LLM (Pursuing)" |
+| year_joined | Year joined party | 1985 |
+| phone | Mobile number (will be masked) | 9012239999 |
+| email | Email address (will be masked) | rajender@example.com |
+| criminal_record | Any criminal cases | "No adverse records" |
+| rationale | Reason for candidacy | "Belief in party ideology..." |
+| strengths | Key strengths | "Strong administrative connections..." |
+| weaknesses | Areas for improvement | "Limited digital experience" |
+| proposers | Supporting leaders | "Ram Singh (Ex HM); Furkan Ahmed (MLA)" |
+| positions_held | Party/organizational positions | "Ward President (2010-2015)" |
+| elections_contested | Electoral history | "Assembly 2022 (Runner-up)" |
 
 ---
 
 ## 🔒 Privacy and Compliance
 
-* **Phone numbers are masked automatically** — cannot be disabled.
-* **Compliance:** Follows Indian IT Act (2000, amended) and data minimisation principles.
-* **Non-partisan:** For neutral administrative documentation only.
+* **Phone masking:** Automatically shows only last 4 digits (******2345)
+* **Email masking:** Shows only first letter and domain (r***@example.com)  
+* **No data storage:** All processing happens client-side
+* **No data transmission:** Your CSV never leaves your browser
+* **Compliance:** Follows Indian IT Act (2000, amended) and data minimization principles
+* **Non-partisan:** For neutral administrative documentation only
 
 ---
 
-## ⚙️ Deployment Guide (GitHub web UI only)
+## ⚙️ Deployment Options
 
-1. Upload all files to your GitHub repo (as shown in the structure above).
-2. In **Netlify → Add new site → Import from GitHub → select this repo**.
-3. **Build command:** `npm run build`
-   **Publish directory:** *(leave blank)*
-4. Click **Deploy**.
+### Option 1: GitHub Pages (Recommended)
+1. Fork or upload this repository to your GitHub account
+2. Go to **Settings → Pages**
+3. Set **Source** to "Deploy from a branch"
+4. Select **main** branch and **/ (root)** folder
+5. Click **Save**
+6. Your site will be live at `https://yourusername.github.io/ummidvaar-dastaavez/`
 
-Netlify will:
+### Option 2: Any Static Host
+Simply upload `index.html` to any web server. The application is completely self-contained.
 
-* Run `scripts/fetch-tectonic.sh`
-* Download and install the correct Tectonic binary
-* Make it executable
-* Deploy the web interface (`index.html`)
-* Activate the serverless function for PDF generation
+### Option 3: Local Use
+Open `index.html` directly in your browser. Note: Some browsers may restrict file uploads when opened locally.
 
 ---
 
-## 📘 Overleaf Template Description
+## 🎨 Design System
 
-`main.tex` uses the **MMSF colour palette**:
+Professional colour palette optimized for readability:
 
-* Light blue, yellow, and black on white background
-* Pale grey highlights for section headers
-* Clean and readable layout for dossiers
-* Automatically paginated and formatted
+* **Primary Blue:** #1e3a8a (Headers, buttons)
+* **Gold Accent:** #fbbf24 (Badges, section dividers)
+* **Navy Text:** #0f172a (Body text)
+* **Grey:** #64748b (Secondary text)
 
-Masking and formatting rules ensure clean presentation and compliance.
+Typography follows LaTeX conventions:
+* Headers: Arial/Sans-serif
+* Body text: Times New Roman/Serif
+* Optimal print margins and spacing
+
+---
+
+## ✨ Features
+
+* **Professional PDF output** with LaTeX-quality typography
+* **One-page-per-candidate** format for easy filing
+* **Automatic data masking** for privacy protection
+* **Dark mode support** for comfortable viewing
+* **CSV validation** with clear error messages
+* **Preview mode** before generating PDF
+* **No dependencies** - pure HTML/CSS/JavaScript
+* **Offline capable** - works without internet once loaded
+
+---
+
+## ⚠️ Browser Compatibility
+
+Works on all modern browsers:
+* Chrome/Edge 90+
+* Firefox 88+
+* Safari 14+
+* Opera 76+
+
+For best PDF output, use Chrome or Edge.
+
+---
+
+## 📘 Technical Notes
+
+* **CSV Parsing:** Handles quoted fields, commas within quotes, and various line endings
+* **PDF Generation:** Uses browser print functionality with CSS print media queries
+* **Masking:** Applied at render time, original data never displayed
+* **Character Encoding:** Full UTF-8 support for Hindi/regional text
 
 ---
 
 ## ⚠️ Legal & Licensing
 
 * **Code:** MIT License
-* **Templates and Samples:** CC BY-NC-SA 4.0
-* **No warranties:** Provided “AS IS,” without guarantees of suitability.
-* **Compliance:** Intended for lawful and educational use under the Indian IT Act, 2000.
-* **Non-partisan:** Meant for standardised administrative documentation.
+* **Documentation:** CC BY-NC-SA 4.0
+* **No warranties:** Provided "AS IS" without guarantees of suitability
+* **Compliance:** Intended for lawful use under Indian IT Act, 2000
+* **Non-partisan:** For standardized administrative documentation only
 
 ---
 
 ## 🧰 Troubleshooting
 
-| Issue                         | Likely Cause                                                 | Fix                                   |
-| ----------------------------- | ------------------------------------------------------------ | ------------------------------------- |
-| Build fails on Netlify        | Tectonic URL changed                                         | Update script with latest release URL |
-| Function returns 500          | Binary missing or not executable                             | Check deploy log for `chmod +x` step  |
-| PDF blank or fails to compile | Invalid LaTeX block                                          | Inspect function log to see TeX error |
-| Button stays disabled         | You must click “Generate LaTeX Blocks” before requesting PDF | Generate blocks first                 |
+| Issue | Solution |
+|-------|----------|
+| File upload doesn't work | Check file is .csv format, not .xlsx or .pdf |
+| Missing columns error | Ensure all 18 required headers are present |
+| PDF looks different than preview | Use Chrome/Edge for best print output |
+| Phone numbers not masked | This is automatic and cannot be disabled |
+| Special characters display incorrectly | Save CSV as UTF-8 encoding |
 
 ---
 
 ## 🪶 Attribution
 
-**उम्मीदवार दस्तावेज़ (Ummidvaar Dastaavez)**
-Built under the **Manmohan Singh Fellowship** initiative for transparent, standardised, and inclusive documentation.
-Colour system and typographic guidelines follow the MMSF design language.
+**उम्मीदवार दस्तावेज़ (Ummidvaar Dastaavez)**  
+Built for transparent, standardized, and inclusive documentation.  
+Professional design system for government and civic applications.
 
 ---
 
 ## 🧠 Credits
 
-* **Concept and Design:** Dr. Varna Sri Raman
-* **Framework:** Manmohan Singh Fellowship Knowledge & Systems Team
-* **Tools:** LaTeX (Tectonic), HTML5, Netlify Functions
+* **Technology:** HTML5, CSS3, JavaScript (ES6+)
 * **License:** MIT (code) + CC BY-NC-SA (content)
 
-```
+---
 
+## 📝 Version History
+
+* **v1.0.0** (2025) - Initial release with core functionality
+  * CSV upload and validation
+  * Professional PDF generation
+  * Mandatory privacy masking
+  * Professional design system implementation
