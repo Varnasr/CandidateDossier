@@ -1,232 +1,377 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>उम्मीदवार दस्तावेज़ (Ummidvaar Dastaavez)</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Ummidvaar Dastaavez — MMSF Candidate Dossiers</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
 <style>
-  :root{ --blue:#007acc; --yellow:#ffd23f; --black:#111; --grey:#f4f4f4; --bg:#fff; --text:#000; --muted:#666; }
-  [data-theme="dark"]{ --bg:#1e1e1e; --text:#f4f4f4; --grey:#2a2a2a; --blue:#4aa3ff; --yellow:#ffcb00; }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-  header{background:var(--blue);color:#fff;padding:12px 16px;position:relative}
-  h1{margin:.25rem 0;font-size:1.5rem}
-  .toggle{position:absolute;right:12px;top:12px;cursor:pointer}
-  main{max-width:900px;margin:0 auto;padding:16px}
-  input[name="tab"]{display:none}
-  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-  .tabs label{padding:8px 12px;border:1px solid var(--grey);background:var(--grey);border-radius:8px 8px 0 0;cursor:pointer;font-weight:600}
-  section.panel{display:none;border:1px solid var(--grey);border-radius:0 10px 10px 10px;padding:12px;background:var(--bg)}
-  #t-intro:checked ~ .panels #p-intro,
-  #t-easy:checked  ~ .panels #p-easy,
-  #t-back:checked  ~ .panels #p-back{display:block}
-  #t-intro:checked ~ .tabs label[for="t-intro"],
-  #t-easy:checked  ~ .tabs label[for="t-easy"],
-  #t-back:checked  ~ .tabs label[for="t-back"]{background:var(--bg);border-color:var(--blue);color:var(--black)}
-  .box{background:var(--grey);padding:10px;border-radius:8px;margin:8px 0}
-  .btn{background:var(--yellow);border:none;border-radius:8px;padding:8px 12px;font-weight:700;cursor:pointer}
-  .btn:hover{background:var(--blue);color:#fff}
-  pre,code{background:#eee;padding:10px;border-radius:8px;display:block}
-  [data-theme="dark"] pre,[data-theme="dark"] code{background:#333;color:#ddd}
-  a{color:var(--blue);text-decoration:none} a:hover{text-decoration:underline}
-  small{color:var(--muted)}
-  footer{margin:16px auto;max-width:900px;background:var(--grey);border-radius:10px;padding:12px;text-align:center}
-  /* CSV schema box */
-  .schema{position:relative;background:#eee;border-radius:8px;padding:10px;overflow:auto;max-width:100%}
-  .schema code{display:block;white-space:nowrap}
-  .schema .copy{position:absolute;right:8px;top:8px;font-size:.85rem;border:1px solid #ccc;background:#fff;border-radius:6px;padding:4px 8px;cursor:pointer}
-  [data-theme="dark"] .schema{background:#333}
-  @media (max-width:640px){ .schema code{white-space:normal;word-break:break-all} }
+  :root {
+    --mmsf-blue: #2b7bbb;     /* light blue */
+    --mmsf-yellow: #ffd54d;   /* mellow yellow */
+    --mmsf-black: #111111;    /* near black */
+    --mmsf-grey: #f2f2f2;     /* pale grey highlight */
+    --bg: #ffffff;
+    --fg: var(--mmsf-black);
+    --muted: #444;
+    --card: #ffffff;
+    --border: #e6e6e6;
+    --btn-fg: #000;
+  }
+  [data-theme="dark"] {
+    --bg: #0f1115;
+    --fg: #e8e8e8;
+    --muted: #b9b9b9;
+    --card: #151923;
+    --border: #2a2f3a;
+    --btn-fg: #0f1115;
+  }
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Inter,Arial,sans-serif}
+  .wrap{max-width:980px;margin:0 auto;padding:24px}
+  header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+  h1{font-size:1.6rem;margin:0}
+  .badge{display:inline-block;background:var(--mmsf-grey);color:var(--fg);padding:2px 8px;border-radius:999px;font-size:.8rem;margin-left:8px}
+  .tabbar{display:flex;gap:8px;margin:18px 0 12px 0;flex-wrap:wrap}
+  .tabbar button{
+    border:1px solid var(--border);background:var(--card);color:var(--fg);
+    padding:10px 14px;border-radius:10px;cursor:pointer
+  }
+  .tabbar button.active{border-color:var(--mmsf-blue);outline:2px solid var(--mmsf-blue)}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+  h2{margin-top:0}
+  .grid{display:grid;gap:14px}
+  .two{grid-template-columns:1fr 1fr}
+  .muted{color:var(--muted)}
+  .hl{background:var(--mmsf-grey);padding:4px 6px;border-radius:6px}
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;
+    background:var(--mmsf-yellow);color:var(--btn-fg);
+    padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600
+  }
+  .btn.secondary{background:var(--mmsf-blue);color:#fff}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  label{font-weight:600}
+  input[type="file"]{display:block;margin-top:8px}
+  .error{border-left:4px solid #d33;background:#fff2f2;color:#7a0c0c;padding:10px 12px;border-radius:8px}
+  [data-theme="dark"] .error{background:#2a1111;color:#ffd0d0}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .kvs{display:grid;grid-template-columns:160px 1fr;gap:8px;margin:8px 0}
+  .sunmoon{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--border);background:var(--card);cursor:pointer}
+  .sunmoon svg{width:18px;height:18px}
+  footer{margin-top:24px;font-size:.9rem;color:var(--muted)}
+  code{background:var(--mmsf-grey);padding:2px 6px;border-radius:6px}
 </style>
 </head>
-<body data-theme="light">
-<header>
-  <div class="toggle" id="theme" title="Toggle theme">🌞</div>
-  <h1>उम्मीदवार दस्तावेज़ (Ummidvaar Dastaavez)</h1>
-  <div>CSV → LaTeX → PDF • MMSF colours</div>
-</header>
+<body>
+<div class="wrap" id="app" data-theme="light">
+  <header>
+    <div>
+      <h1>Ummidvaar Dastaavez <span class="badge">MMSF palette</span></h1>
+      <div class="muted">Candidate dossiers • phone numbers auto-masked • Overleaf-ready</div>
+    </div>
+    <button class="sunmoon" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
+      <!-- sun (light) / moon (dark) -->
+      <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg id="moonIcon" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    </button>
+  </header>
 
-<main>
-  <!-- Tabs: Intro FIRST, then Easy, then Backup -->
-  <input type="radio" id="t-intro" name="tab" checked>
-  <input type="radio" id="t-easy"  name="tab">
-  <input type="radio" id="t-back"  name="tab">
+  <!-- Tabs -->
+  <nav class="tabbar">
+    <button class="active" data-tab="intro">Intro</button>
+    <button data-tab="easy">Easy (CSV → PDF)</button>
+    <button data-tab="backup">Backup (Overleaf)</button>
+  </nav>
 
-  <div class="tabs" role="tablist">
-    <label for="t-intro" role="tab" aria-controls="p-intro">Intro</label>
-    <label for="t-easy"  role="tab" aria-controls="p-easy">Easy</label>
-    <label for="t-back"  role="tab" aria-controls="p-back">Backup (Advanced)</label>
-  </div>
-
-  <div class="panels">
-    <!-- INTRO -->
-    <section id="p-intro" class="panel" role="tabpanel" aria-labelledby="t-intro">
-      <h2>Why this matters</h2>
-      <p>District teams need clean, comparable dossiers. We separate <em>data</em> (CSV) from <em>layout</em> (LaTeX) so every dossier prints consistently and is easy to review and share.</p>
-      <div class="box">
-        <strong>Privacy (mandatory):</strong> All phone numbers are <em>automatically masked</em> to ******1234 before any processing or PDF generation. This behaviour cannot be disabled. Upload only what’s necessary. Use for non-partisan, administrative documentation under the Indian IT Act. Outputs are provided “AS IS”.
+  <!-- Intro -->
+  <section class="card" id="tab-intro">
+    <h2>Why CSV, why blocks, and why masking?</h2>
+    <p>
+      We generate candidate dossiers by turning a structured <span class="hl">CSV</span> into a LaTeX
+      <span class="hl">blocks file</span> (<code>candidate_blocks.tex</code>), which is then included in a simple
+      LaTeX template to export a high-quality PDF. “Blocks” let you reuse the same layout across dozens of candidates
+      without hand-editing.
+    </p>
+    <div class="grid">
+      <div class="kvs">
+        <div><strong>Template looks like</strong></div><div><code>main.tex</code> includes <code>\input{candidate_blocks.tex}</code> inside a section.</div>
+        <div><strong>Blocks contain</strong></div><div>Per-candidate tables and paragraphs (rationale, strengths, proposers…).</div>
+        <div><strong>CSV fields</strong></div>
+        <div><code>preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections</code></div>
       </div>
-      <h3>How it works</h3>
-      <ol>
-        <li>Prepare your CSV with the required headers (see Easy tab).</li>
-        <li>Go to <strong>Easy</strong> → Upload CSV → <strong>Get PDF</strong>.</li>
-        <li>If serverless compile is unavailable, use <strong>Backup</strong> with Overleaf.</li>
-      </ol>
-      <h3>Demo downloads</h3>
-      <ul>
-        <li><a href="sample_candidate_data.csv" download>Demo CSV</a></li>
-        <li><a href="main_template.tex" download>LaTeX template (main.tex)</a></li>
-        <li><a href="sample_output.pdf" download>Sample output PDF</a></li>
-      </ul>
-    </section>
+    </div>
+    <p>
+      Phone numbers are <strong>mandatorily masked</strong> (e.g., <code>******2345</code>) to protect privacy and to comply
+      with Indian data norms. Masking happens automatically during block generation.
+    </p>
+    <div class="row">
+      <a class="btn secondary" href="sample_candidate_data.csv" download>Download sample CSV</a>
+      <a class="btn" href="sample_output.pdf" download>Download sample PDF</a>
+    </div>
+    <p class="muted">Tip: If the sample PDF 404s, upload any Overleaf-compiled dossier as <code>sample_output.pdf</code> to the repo root.</p>
+  </section>
 
-    <!-- EASY -->
-    <section id="p-easy" class="panel" role="tabpanel" aria-labelledby="t-easy">
-      <h2>Easy — Upload CSV → Get PDF</h2>
-
-      <p><strong>CSV schema (headers):</strong></p>
-      <div class="schema">
-        <button class="copy" type="button" id="copySchema">Copy</button>
-        <code id="schemaText">preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections</code>
+  <!-- Easy -->
+  <section class="card" id="tab-easy" style="display:none">
+    <h2>CSV → PDF (one click)</h2>
+    <p>Upload a CSV in the exact scheme below. PDFs are not accepted here.</p>
+    <div class="hl" style="overflow:auto"><code id="csvScheme">preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections</code></div>
+    <div class="grid">
+      <div>
+        <label for="csvFile">Upload CSV</label>
+        <input id="csvFile" type="file" accept=".csv,text/csv" />
+        <div id="fileError" class="error" style="display:none;margin-top:10px"></div>
       </div>
-
-      <div class="box" style="margin-top:10px">
-        <label for="csv">Upload your CSV</label><br>
-        <input type="file" id="csv" accept=".csv">
-        <div style="margin-top:8px">
-          <button class="btn" id="getPdf">Get PDF</button>
-        </div>
-        <small>Phone masking is automatic and mandatory.</small>
+      <div class="row">
+        <button id="compileBtn" class="btn" disabled>Get PDF</button>
+        <div id="busy" class="muted" style="display:none">Compiling…</div>
       </div>
+    </div>
+    <div id="easyMsg" class="muted" style="margin-top:10px"></div>
+  </section>
 
-      <div id="after" class="box" style="display:none">
-        <strong>PDF is ready.</strong>
-        <button class="btn" id="dlPdf">Download PDF</button>
-      </div>
-    </section>
+  <!-- Backup -->
+  <section class="card" id="tab-backup" style="display:none">
+    <h2>Backup (Overleaf)</h2>
+    <p>
+      If network or serverless compilation is unavailable, use Overleaf:
+    </p>
+    <ol>
+      <li>Download <a class="hl" href="main_template.tex" download>main_template.tex</a> and generate a <code>candidate_blocks.tex</code> (Easy tab can export blocks only if you prefer).</li>
+      <li>Go to <a href="https://www.overleaf.com/" target="_blank" rel="noopener">Overleaf</a> → New Project → Upload Project → add both files.</li>
+      <li>Recompile and download your PDF.</li>
+    </ol>
+    <p class="muted">Phone masking is already enforced in our block generator.</p>
+  </section>
 
-    <!-- BACKUP -->
-    <section id="p-back" class="panel" role="tabpanel" aria-labelledby="t-back">
-      <h2>Backup (Advanced) — Overleaf</h2>
-      <ol>
-        <li>Use the same CSV; we convert to <em>masked</em> LaTeX blocks locally.</li>
-        <li>Download <code>candidate_blocks.tex</code> and <code>main.tex</code>.</li>
-        <li>Open <a href="https://www.overleaf.com/" target="_blank" rel="noopener">Overleaf</a> → New Project → upload both files.</li>
-        <li>Ensure <code>\input{candidate_blocks.tex}</code> exists in <code>main.tex</code>.</li>
-        <li>Recompile → Download PDF.</li>
-      </ol>
-
-      <div style="margin-top:8px">
-        <input type="file" id="csvB" accept=".csv">
-        <button class="btn" id="genB">Generate & download candidate_blocks.tex</button>
-        <button class="btn" id="dlMain">Download main.tex</button>
-      </div>
-    </section>
-  </div>
-</main>
-
-<footer>
-  उम्मीदवार दस्तावेज़ • Non-partisan • CC BY-NC-SA (content) • MIT (code) • No warranties
-</footer>
+  <footer>
+    <div>Non-partisan civic tool • CC BY-NC-SA for docs, MIT for code • No warranties • Complies with Indian IT Act norms (privacy-first; phone masking mandatory)</div>
+  </footer>
+</div>
 
 <script>
-  // Theme toggle
-  document.getElementById('theme').addEventListener('click', function(){
-    var light = document.body.getAttribute('data-theme') === 'light';
-    document.body.setAttribute('data-theme', light ? 'dark' : 'light');
-    this.textContent = light ? '🌙' : '🌞';
+(function(){
+  // --- tabs & theme ---
+  const app = document.getElementById('app');
+  const tabs = document.querySelectorAll('.tabbar button');
+  const sections = {
+    intro: document.getElementById('tab-intro'),
+    easy: document.getElementById('tab-easy'),
+    backup: document.getElementById('tab-backup')
+  };
+  tabs.forEach(b=>{
+    b.addEventListener('click', ()=>{
+      tabs.forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const id = b.dataset.tab;
+      for (const k in sections) sections[k].style.display = (k===id) ? '' : 'none';
+    });
+  });
+  const btn = document.getElementById('themeToggle');
+  const sun = document.getElementById('sunIcon');
+  const moon= document.getElementById('moonIcon');
+  btn.addEventListener('click', ()=>{
+    const cur = app.getAttribute('data-theme') === 'dark' ? 'light':'dark';
+    app.setAttribute('data-theme', cur);
+    if(cur==='dark'){sun.style.display='none';moon.style.display='block';}
+    else {sun.style.display='block';moon.style.display='none';}
   });
 
-  // Copy CSV schema
-  document.getElementById('copySchema')?.addEventListener('click', async function(){
-    const txt = document.getElementById('schemaText').textContent;
-    try { await navigator.clipboard.writeText(txt); this.textContent = 'Copied'; setTimeout(()=> this.textContent='Copy', 1200); }
-    catch(e){ alert('Copy failed'); }
-  });
+  // --- Easy tab logic ---
+  const csvInput   = document.getElementById('csvFile');
+  const fileError  = document.getElementById('fileError');
+  const compileBtn = document.getElementById('compileBtn');
+  const busy       = document.getElementById('busy');
+  const easyMsg    = document.getElementById('easyMsg');
 
-  // --- CSV parsing + mandatory masking ---
-  function maskPhone(s){ s = String(s||'').replace(/\\D/g,''); return s.length>=4 ? '******'+s.slice(-4) : s; }
-  function parseCSV(txt){
-    var rows = txt.trim().split(/\\r?\\n/);
-    var h = rows[0].split(',');
-    return rows.slice(1).map(function(r){
-      var v = r.split(',');
-      var o = {}; h.forEach(function(k,i){ o[k] = (v[i]||'').trim(); });
-      if(o.phone) o.phone = maskPhone(o.phone);   // ALWAYS enforced
-      return o;
-    });
+  const REQUIRED = "preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections".split(',');
+
+  let csvRows = null;
+
+  function showError(msg){
+    console.error('[CSV ERROR]', msg);
+    fileError.style.display='block';
+    fileError.textContent = msg;
   }
-  function toBlocks(data){
-    var out = "\\\\section{Candidate Preferences}\\n";
-    data.forEach(function(d){
-      out += "\\\\subsection*{Preference "+(d.preference||'')+" — "+(d.name||'')+"}\\n";
-      out += "\\\\begin{tabularx}{\\\\linewidth}{@{}lY lY@{}}\\n";
-      out += "\\\\textbf{Name} & "+(d.name||'')+" & \\\\\\\\textbf{Category/Caste} & "+(d.category||'')+"/"+(d.caste||'')+" \\\\\\\\n";
-      out += "\\\\textbf{Age} & "+(d.age||'')+" & \\\\\\\\textbf{Occupation} & "+(d.occupation||'')+" \\\\\\\\n";
-      out += "\\\\textbf{Education} & "+(d.education||'')+" & \\\\\\\\textbf{Year Joined} & "+(d.joined||'')+" \\\\\\\\n";
-      out += "\\\\textbf{Phone} & "+(d.phone||'')+" & \\\\\\\\textbf{Record} & "+(d.record||'')+" \\\\\\\\n";
-      out += "\\\\end{tabularx}\\n\\n";
-      out += "\\\\textbf{Rationale.} "+(d.rationale||'')+"\\n\\n";
-      out += "\\\\textbf{Strengths.} "+(d.strengths||'')+"\\n\\n";
-      out += "\\\\textbf{Weaknesses.} "+(d.weaknesses||'')+"\\n\\n";
-      out += "\\\\textbf{Proposers.} "+(d.proposers||'')+"\\n\\n";
-      out += "\\\\textbf{Positions Held.} "+(d.positions||'')+"\\n\\n";
-      out += "\\\\textbf{Elections Contested.} "+(d.elections||'')+"\\n\\n";
-      out += "\\\\vspace{8pt}\\\\hrule\\\\vspace{10pt}\\n";
-    });
-    return out;
+  function clearError(){
+    fileError.style.display='none';
+    fileError.textContent = '';
+  }
+  function setBusy(on){ busy.style.display = on ? 'inline' : 'none'; }
+
+  // Normalize headers: trim, lowercase, collapse spaces/underscores
+  function normalizeHeader(h){
+    return String(h||'').trim().toLowerCase().replace(/\s+/g,'').replace(/_/g,'');
   }
 
-  // EASY: one upload + one Get PDF → compile on server (masking already applied)
-  var lastPdfBlob = null;
-  document.getElementById('getPdf').onclick = async function(){
-    var input = document.getElementById('csv');
-    var f = input.files && input.files[0];
-    if(!f){ alert('Please choose a CSV.'); return; }
-    var r = new FileReader();
-    r.onload = async function(e){
-      try{
-        var data = parseCSV(e.target.result);     // masking happens here
-        var blocks = toBlocks(data);              // we don’t show blocks; we compile directly
-        var MAIN = "\\\\documentclass{article}\\n\\\\usepackage[a4paper,margin=1in]{geometry}\\n\\\\usepackage{tabularx,booktabs}\\n\\\\begin{document}\\n\\\\title{Candidate Dossier}\\n\\\\maketitle\\n\\\\input{candidate_blocks.tex}\\n\\\\end{document}";
-        var resp = await fetch('/api/compile', {
-          method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ mainTex: MAIN, blocksTex: blocks })
+  // Mandatory phone masking
+  function maskPhone(v){
+    const digits = String(v||'').replace(/\D/g,'');
+    if(!digits) return '';
+    return '******' + digits.slice(-4);
+  }
+
+  // Minimal LaTeX escaper
+  function esc(s){ return String(s||'').replace(/([%$&#{}_])/g,'\\$1'); }
+
+  // Build LaTeX blocks from CSV
+  function buildBlocksTex(rows){
+    const parts = [];
+    parts.push('% Generated blocks (phones masked)\n\\section{Candidate Preferences}');
+    rows.forEach((r, i)=>{
+      const pref = esc(r.preference);
+      const name = esc(r.name);
+      const cat  = esc(r.category);
+      const caste= esc(r.caste);
+      const age  = esc(r.age);
+      const occ  = esc(r.occupation);
+      const edu  = esc(r.education);
+      const joined = esc(r.joined);
+      const phone = maskPhone(r.phone);
+      const rec  = esc(r.record);
+      const rationale = esc(r.rationale);
+      const strengths = esc(r.strengths);
+      const weaknesses= esc(r.weaknesses);
+      const proposers = esc(r.proposers);
+      const positions = esc(r.positions);
+      const elections = esc(r.elections);
+
+      parts.push(`\\subsection*{Preference ${pref||i+1} — ${name||'Unnamed'}}`);
+      parts.push(`\\begin{tabularx}{\\linewidth}{@{}lY lY@{}}`);
+      parts.push(`\\textbf{Name} & ${name} & \\textbf{Category/Caste} & ${cat}/${caste} \\\\`);
+      parts.push(`\\textbf{Age} & ${age} & \\textbf{Occupation} & ${occ} \\\\`);
+      parts.push(`\\textbf{Education} & ${edu} & \\textbf{Year Joined} & ${joined} \\\\`);
+      parts.push(`\\textbf{Phone} & ${phone} & \\textbf{Record} & ${rec} \\\\`);
+      parts.push(`\\end{tabularx}\n`);
+      const para = (label, value) => `\\textbf{${label}.} ${value||'\\,'}\n`;
+      parts.push(para('Rationale', rationale));
+      parts.push(para('Strengths', strengths));
+      parts.push(para('Weaknesses', weaknesses));
+      parts.push(para('Proposers', proposers));
+      parts.push(para('Positions Held', positions));
+      parts.push(para('Elections Contested', elections));
+      parts.push(`\\vspace{8pt}\\hrule\\vspace{10pt}\n`);
+    });
+    return parts.join('\n');
+  }
+
+  // Safe minimal main.tex (always valid)
+  const MAIN_TEX = String.raw`
+\\documentclass[12pt]{article}
+\\usepackage[a4paper,margin=1in]{geometry}
+\\usepackage{tabularx,array}
+\\usepackage{hyperref}
+\\usepackage{bookmark}
+\\usepackage{lmodern}
+\\newcolumntype{Y}{>{\\raggedright\\arraybackslash}X}
+\\title{Candidate Dossier}
+\\author{Ummidvaar Dastaavez}
+\\date{\\today}
+\\begin{document}
+\\maketitle
+\\tableofcontents
+\\bigskip
+\\section*{Candidate Blocks}
+\\input{candidate_blocks.tex}
+\\end{document}
+`.trim();
+
+  // CSV change handler
+  csvInput.addEventListener('change', ()=>{
+    clearError(); easyMsg.textContent = '';
+    csvRows = null; compileBtn.disabled = true;
+
+    const f = csvInput.files && csvInput.files[0];
+    if(!f){ return; }
+    if(!/\.csv$/i.test(f.name)){
+      showError('Please upload a CSV file (not PDF).'); return;
+    }
+    if(f.size > 5 * 1024 * 1024){
+      showError('CSV is too large (limit ~5MB for this demo).'); return;
+    }
+
+    Papa.parse(f, {
+      header: true,
+      skipEmptyLines: true,
+      transformHeader: h => normalizeHeader(h),
+      complete: (res)=>{
+        console.log('[Papa.parse] meta:', res.meta);
+        console.log('[Papa.parse] errors:', res.errors);
+        if(res.errors && res.errors.length){
+          showError('CSV parse error: ' + res.errors[0].message); return;
+        }
+        let rows = res.data || [];
+        // Normalize keys of each row back to canonical names
+        const fields = (res.meta.fields || []).map(normalizeHeader);
+        const mapBack = {};
+        REQUIRED.forEach(k=>{
+          const nk = normalizeHeader(k);
+          const idx = fields.indexOf(nk);
+          mapBack[k] = (idx === -1) ? null : res.meta.fields[idx];
         });
-        if(!resp.ok){ alert('Compile failed: '+await resp.text()); return; }
-        lastPdfBlob = await resp.blob();
-        document.getElementById('after').style.display = 'block';
-      }catch(err){ alert('Error: '+err.message); }
-    };
-    r.readAsText(f);
-  };
-  document.getElementById('dlPdf').onclick = function(){
-    if(!lastPdfBlob){ alert('No PDF ready yet.'); return; }
-    var url = URL.createObjectURL(lastPdfBlob);
-    var a = document.createElement('a'); a.href = url; a.download = 'dossier.pdf'; a.click(); URL.revokeObjectURL(url);
-  };
 
-  // BACKUP: generate masked blocks + download tex files for Overleaf
-  document.getElementById('genB').onclick = function(){
-    var input = document.getElementById('csvB');
-    var f = input.files && input.files[0];
-    if(!f){ alert('Please choose a CSV.'); return; }
-    var r = new FileReader();
-    r.onload = function(e){
-      var data = parseCSV(e.target.result);       // masking happens here too
-      var blocks = toBlocks(data);
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(new Blob([blocks], {type:'text/plain'}));
-      a.download = 'candidate_blocks.tex'; a.click(); URL.revokeObjectURL(a.href);
-    };
-    r.readAsText(f);
-  };
-  document.getElementById('dlMain').onclick = function(){
-    var MAIN = "\\\\documentclass{article}\\n\\\\usepackage[a4paper,margin=1in]{geometry}\\n\\\\usepackage{tabularx,booktabs}\\n\\\\begin{document}\\n\\\\title{Candidate Dossier}\\n\\\\maketitle\\n\\\\input{candidate_blocks.tex}\\n\\\\end{document}";
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(new Blob([MAIN], {type:'text/plain'}));
-    a.download = 'main.tex'; a.click(); URL.revokeObjectURL(a.href);
-  };
+        const missing = REQUIRED.filter(k => mapBack[k] === null);
+        if (missing.length){
+          showError('CSV missing columns: ' + missing.join(', ')); return;
+        }
+
+        // Remap each row to canonical keys
+        rows = rows.map(r=>{
+          const o = {};
+          REQUIRED.forEach(k=>{
+            const src = mapBack[k];
+            o[k] = src ? r[src] : '';
+          });
+          return o;
+        });
+
+        if (!rows.length){
+          showError('CSV has 0 data rows after parsing.'); return;
+        }
+
+        csvRows = rows;
+        compileBtn.disabled = false;
+        easyMsg.textContent = `Loaded ${csvRows.length} rows. Phone masking will be applied automatically.`;
+      }
+    });
+  });
+
+  async function compileNow(){
+    if(!csvRows || !csvRows.length){
+      showError('Please upload a CSV first.'); return;
+    }
+    clearError(); setBusy(true); compileBtn.disabled = true;
+
+    const blocksTex = buildBlocksTex(csvRows);
+    try{
+      const resp = await fetch('/api/compile', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ mainTex: MAIN_TEX, blocksTex })
+      });
+      if(!resp.ok){
+        const text = await resp.text();
+        showError('Compile failed: ' + text.slice(0,600));
+        return;
+      }
+      const blob = await resp.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = 'candidate_dossier.pdf';
+      document.body.appendChild(a); a.click();
+      a.remove(); setTimeout(()=>URL.revokeObjectURL(url), 1500);
+      easyMsg.textContent = 'Done. PDF downloaded.';
+    } catch(e){
+      showError('Network or function error: ' + (e && e.message ? e.message : e));
+    } finally {
+      setBusy(false);
+      compileBtn.disabled = false;
+    }
+  }
+
+  document.getElementById('compileBtn').addEventListener('click', compileNow);
+})();
 </script>
 </body>
 </html>
