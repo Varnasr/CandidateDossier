@@ -8,74 +8,79 @@
 
 <style>
   :root{
-    /* Professional, restrained palette (blue/yellow/black on white; pale grey dividers) */
-    --blue:#2568c0;
-    --gold:#ffd54d;
-    --ink:#0f131a;
-    --muted:#5f6b7a;
+    /* MMSF Palette - Professional blues and golds */
+    --mmsf-blue:#1e3a8a;
+    --mmsf-gold:#fbbf24;
+    --mmsf-navy:#0f172a;
+    --mmsf-grey:#64748b;
     --bg:#ffffff;
     --card:#ffffff;
-    --border:#e7e9ef;
-    --soft:#f6f7fb;
+    --border:#e2e8f0;
+    --soft:#f8fafc;
   }
   [data-theme="dark"]{
-    --bg:#0f1115; --card:#151923; --ink:#e9eef7; --muted:#b8c0cc;
-    --border:#2b3240; --soft:#1a2130; --blue:#5ba0ff; --gold:#f2c441;
+    --bg:#0f1115; --card:#1e293b; --mmsf-navy:#e2e8f0; --mmsf-grey:#cbd5e1;
+    --border:#334155; --soft:#1e293b; --mmsf-blue:#60a5fa; --mmsf-gold:#fcd34d;
   }
   html,body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+    margin:0; background:var(--bg); color:var(--mmsf-navy);
+    font:14px/1.6 'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
     -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   }
-  .wrap{max-width:1000px;margin:0 auto;padding:20px}
-  header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
-  h1{margin:0;font-size:1.7rem;font-weight:800;letter-spacing:.2px}
-  .sunmoon{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--border);background:var(--card);cursor:pointer}
-  .sunmoon svg{width:18px;height:18px}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;border-bottom:3px solid var(--mmsf-blue);padding-bottom:16px;margin-bottom:24px}
+  h1{margin:0;font-size:1.9rem;font-weight:800;color:var(--mmsf-blue);letter-spacing:-0.5px}
+  .sunmoon{width:40px;height:40px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid var(--mmsf-blue);background:var(--card);cursor:pointer;transition:all 0.2s}
+  .sunmoon:hover{background:var(--soft)}
+  .sunmoon svg{width:20px;height:20px;color:var(--mmsf-blue)}
 
-  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:18px;margin-top:14px;box-shadow:0 1px 0 rgba(0,0,0,.02)}
-  .muted{color:var(--muted)}
-  .hl{background:var(--soft);padding:2px 6px;border-radius:6px}
-  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--gold);color:#000;border:none;border-radius:10px;padding:10px 14px;font-weight:700;cursor:pointer}
-  .btn.secondary{background:var(--blue);color:#fff}
-  input[type="file"]{display:block;margin-top:6px}
-  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .error{border-left:4px solid #d33;background:#fff2f2;color:#7a0c0c;padding:10px;border-radius:10px;margin-top:10px;display:none}
-  [data-theme="dark"] .error{background:#2a1111;color:#ffd0d0}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-top:16px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+  .muted{color:var(--mmsf-grey)}
+  .hl{background:var(--mmsf-gold);color:var(--mmsf-navy);padding:3px 8px;border-radius:4px;font-weight:600}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--mmsf-blue);color:#fff;border:none;border-radius:8px;padding:11px 16px;font-weight:600;cursor:pointer;transition:all 0.2s}
+  .btn:hover{background:#1e40af;transform:translateY(-1px);box-shadow:0 2px 8px rgba(30,58,138,0.3)}
+  .btn.secondary{background:var(--mmsf-gold);color:var(--mmsf-navy)}
+  .btn.secondary:hover{background:#f59e0b}
+  input[type="file"]{display:block;margin-top:8px;padding:4px}
+  .row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  .error{border-left:4px solid #dc2626;background:#fef2f2;color:#991b1b;padding:12px;border-radius:8px;margin-top:12px;display:none}
+  [data-theme="dark"] .error{background:#450a0a;color:#fca5a5}
 
-  .small{font-size:.92rem}
-  code{background:var(--soft);padding:2px 6px;border-radius:6px}
+  .small{font-size:.93rem}
+  code{background:var(--soft);padding:3px 7px;border-radius:4px;font-family:'Courier New',monospace}
 
-  #preview{max-width:860px;margin:0 auto}
-  .sheet{border:1px solid var(--border);border-radius:10px;padding:16px;margin:12px 0;background:#fff;color:#000}
+  #preview{max-width:900px;margin:0 auto}
+  .sheet{border:1px solid var(--border);border-radius:10px;padding:18px;margin:14px 0;background:#fff;color:#000}
   [data-theme="dark"] .sheet{background:#fff;color:#000}
-  .sheet h3{margin:.2rem 0 .6rem 0}
-  .kv{display:grid;grid-template-columns:170px 1fr 170px 1fr;gap:6px 12px}
-  .kv strong{white-space:nowrap}
-  hr{border:0;border-top:1px solid var(--border);margin:12px 0}
+  .sheet h3{margin:.3rem 0 .7rem 0;color:var(--mmsf-blue)}
+  .kv{display:grid;grid-template-columns:160px 1fr 160px 1fr;gap:8px 14px}
+  .kv strong{white-space:nowrap;color:var(--mmsf-navy)}
+  hr{border:0;border-top:2px solid var(--mmsf-gold);margin:14px 0}
 
-  /* PRINT LAYOUT — “LaTeX-level” discipline via paged CSS */
-  .print-wrap{font:11.25pt/1.45 system-ui, Segoe UI, Roboto, Arial, sans-serif; color:#121620}
-  .print-page{page-break-after:always; padding:22mm 18mm; position:relative}
-  .print-title{font:800 26pt/1.2 system-ui; margin:0 0 8mm 0; letter-spacing:.1px}
-  .print-rule{height:2px;background:var(--blue);margin:2mm 0 7mm 0}
-  .chip{display:inline-block;background:var(--gold);color:#111;padding:2px 8px;border-radius:8px;font:700 10pt system-ui}
-  .kv2{display:grid;grid-template-columns:36mm 64mm 36mm 64mm;gap:3mm 6mm;margin-top:3mm}
-  .kv2 .lab{font:700 10pt system-ui;color:#101318}
-  .kv2 .val{font:10pt system-ui;color:#2b313a}
-  .sec{margin-top:6mm}
-  .sec .hd{display:flex;align-items:center;gap:5mm;margin:0 0 2mm 0}
-  .goldbar{width:14mm;height:2.2mm;background:var(--gold)}
-  .hd span{font:700 11pt system-ui}
-  .para{font:10.5pt system-ui; white-space:pre-wrap; color:#2b313a}
-  .pagenum{position:absolute;bottom:10mm;right:18mm;font:600 9pt system-ui;color:#6b7280}
-
-  .cover .print-title{font-size:28pt}
-  .cover .meta{font:600 12pt system-ui;margin-top:4mm;color:#2b313a}
-  .cover .print-rule{height:3px}
-
-  @page{size:A4;margin:0}
+  /* PRINT LAYOUT — Professional LaTeX-style formatting */
   @media print{ body{background:#fff} }
+  @page{size:A4;margin:0}
+  
+  .print-wrap{font:11pt/1.5 'Times New Roman',Georgia,serif; color:#1a1a1a}
+  .print-page{page-break-after:always; padding:25mm 20mm; position:relative; min-height:247mm}
+  .print-header{border-bottom:3px solid var(--mmsf-blue);padding-bottom:8mm;margin-bottom:10mm}
+  .print-title{font:700 24pt/1.2 'Arial',sans-serif; margin:0 0 3mm 0; color:var(--mmsf-blue)}
+  .print-subtitle{font:400 11pt/1.3 'Arial',sans-serif; color:var(--mmsf-grey); margin:0}
+  
+  .cat-badge{display:inline-block;background:var(--mmsf-gold);color:var(--mmsf-navy);padding:3px 10px;border-radius:4px;font:600 10pt 'Arial',sans-serif;margin-bottom:8mm}
+  
+  .info-grid{display:grid;grid-template-columns:38mm 62mm 38mm 62mm;gap:3mm 7mm;margin-bottom:10mm}
+  .info-grid .label{font:600 9.5pt 'Arial',sans-serif;color:#334155}
+  .info-grid .value{font:400 10pt 'Arial',sans-serif;color:#1e293b;border-bottom:1px solid #e2e8f0;padding-bottom:1mm}
+  
+  .section{margin-top:8mm}
+  .section-header{display:flex;align-items:center;gap:5mm;margin:0 0 3mm 0}
+  .gold-bar{width:4mm;height:3mm;background:var(--mmsf-gold)}
+  .section-header span{font:600 11.5pt 'Arial',sans-serif;color:var(--mmsf-blue)}
+  .section-content{font:400 10.5pt/1.6 'Times New Roman',serif; color:#374151; white-space:pre-wrap}
+  
+  .pagenum{position:absolute;bottom:12mm;right:20mm;font:400 9pt 'Arial',sans-serif;color:#94a3b8}
+  .watermark{position:absolute;top:15mm;right:20mm;font:400 8pt 'Arial',sans-serif;color:#cbd5e1}
 </style>
 </head>
 <body>
@@ -83,50 +88,48 @@
   <header>
     <h1>Ummidvaar Dastaavez — Candidate Dossiers</h1>
     <button class="sunmoon" id="themeToggle" aria-label="Toggle theme" title="Toggle theme">
-      <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-      <svg id="moonIcon" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      <svg id="sunIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      <svg id="moonIcon" style="display:none" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
     </button>
   </header>
 
-  <!-- EXPLANATION FIRST -->
   <section class="card">
-    <h2>What this is & why it matters</h2>
+    <h2 style="color:var(--mmsf-blue)">What This Is & Why It Matters</h2>
     <p>
-      This tool turns a structured <span class="hl">CSV</span> into a print-ready <span class="hl">A4 PDF dossier</span> — one page per candidate — using a restrained professional palette, clean key–value grids, gold section badges, and page numbers. 
-      All phone numbers are <strong>mandatorily masked</strong> to the last four digits (e.g., <code>******2345</code>) to protect privacy.
+      This tool transforms structured <span class="hl">CSV data</span> into professional <span class="hl">PDF candidate dossiers</span> with LaTeX-quality typography, 
+      using the MMSF color palette. All phone numbers and emails are <strong>mandatorily masked</strong> for privacy protection.
     </p>
-    <p class="muted">
-      <strong>Required CSV headers</strong> (names are tolerant for spaces/underscores/case):<br/>
-      <code>preference, name, category, caste, age, occupation, education, joined, phone, record, rationale, strengths, weaknesses, proposers, positions, elections</code>
+    <p class="muted small">
+      <strong>Required CSV columns:</strong><br/>
+      <code>preference, name, category, caste, age, gender, occupation, education, year_joined, phone, email, 
+      criminal_record, rationale, strengths, weaknesses, proposers, positions_held, elections_contested</code>
     </p>
   </section>
 
-  <!-- ACTIONS -->
   <section class="card">
-    <h2>Make the PDF</h2>
+    <h2 style="color:var(--mmsf-blue)">Generate Professional PDF</h2>
     <div class="row">
       <div>
-        <label><strong>Upload CSV</strong></label>
+        <label><strong>Upload CSV File</strong></label>
         <input id="csvFile" type="file" accept=".csv,text/csv"/>
       </div>
-      <button id="printBtn" class="btn secondary" disabled>Open Print-to-PDF</button>
-      <button id="previewBtn" class="btn" disabled>Preview on Page</button>
-      <a id="templateLink" class="btn" download="sample_candidate_data.csv">Download CSV Template</a>
-      <button id="sampleBtn" class="btn">View Sample One-Pager</button>
-      <div id="busy" class="muted" style="display:none">Working…</div>
+      <button id="printBtn" class="btn" disabled>📄 Generate PDF</button>
+      <button id="previewBtn" class="btn secondary" disabled>👁️ Preview</button>
+      <a id="templateLink" class="btn secondary" download="candidate_template.csv">⬇️ Download Template</a>
+      <button id="sampleBtn" class="btn">📋 View Sample</button>
+      <div id="busy" class="muted" style="display:none">Processing...</div>
     </div>
     <div id="fileError" class="error"></div>
-    <p class="muted small">Tip: Use the template, or your own CSV if headers match exactly. Masking is automatic and cannot be turned off.</p>
+    <p class="muted small">💡 <strong>Tip:</strong> Phone and email masking is automatic and mandatory for privacy compliance.</p>
   </section>
 
-  <!-- OPTIONAL PREVIEW -->
   <section class="card">
-    <h2>Preview (optional)</h2>
+    <h2 style="color:var(--mmsf-blue)">Preview</h2>
     <div id="preview"></div>
   </section>
 
   <footer class="card muted small">
-    Non-partisan civic tool • Docs CC BY-NC-SA, Code MIT • No warranties • Privacy-first; phone masking mandatory.
+    Non-partisan civic tool • Professional political candidate assessment system • Privacy-first design with mandatory data masking
   </footer>
 </div>
 
@@ -141,18 +144,29 @@
   });
 
   /* Helpers */
-  const HEADERS = "preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections".split(',');
+  const HEADERS = "preference,name,category,caste,age,gender,occupation,education,year_joined,phone,email,criminal_record,rationale,strengths,weaknesses,proposers,positions_held,elections_contested".split(',');
   const norm = s => String(s||'').trim().toLowerCase().replace(/\s+/g,'').replace(/_/g,'');
   const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const maskPhone = v => { const d = String(v||'').replace(/\D/g,''); return d ? '******' + d.slice(-4) : ''; };
+  const maskPhone = v => { 
+    const d = String(v||'').replace(/\D/g,''); 
+    return d ? '******' + d.slice(-4) : 'N/A'; 
+  };
+  const maskEmail = v => {
+    const email = String(v||'').trim();
+    if(!email || !email.includes('@')) return 'N/A';
+    const [local, domain] = email.split('@');
+    return local.charAt(0) + '***@' + domain;
+  };
 
   function showError(msg){ const e=document.getElementById('fileError'); e.style.display='block'; e.textContent=msg; }
   function clearError(){ const e=document.getElementById('fileError'); e.style.display='none'; e.textContent=''; }
   function setBusy(on){ document.getElementById('busy').style.display = on?'inline':'none'; }
 
-  /* Robust minimal CSV parser (supports quoted fields and commas inside quotes) */
+  /* CSV parser with quote handling */
   function parseCSV(text){
     const rows=[]; let row=[], cur='', q=false;
+    // Remove BOM if present
+    text = text.replace(/^\uFEFF/, '');
     for(let i=0;i<text.length;i++){
       const c=text[i], n=text[i+1];
       if(q){
@@ -171,13 +185,16 @@
     return rows;
   }
 
-  /* Downloadable CSV template */
+  /* Template CSV with comprehensive political candidate data */
   const templateCSV = [
     HEADERS.join(','),
-    '1,Anita Devi,SC,Mahadalit,34,Anganwadi Worker,Class 12,2012,9891123456,Active in SHG; no adverse records,"Strong community rapport; consistent attendance","Limited formal political experience","Sita Kumari; Renu Devi","Panchayat Education Committee Member","Contested Ward Member 2021"',
-    '2,Rahim Ansari,EBC,Ansari,41,Weaver,Class 10,2008,9876543210,No adverse records,"Respected artisan; youth engagement","Needs support for documentation","Salim Khan; Farida Bano","SHG Treasurer","Contested Ward Member 2016"',
-    '3,Sunita Kumari,General,Bhumihar,29,ASHA Worker,Graduate,2019,9123456789,No adverse records,"High field presence; women\'s networks","Public speaking confidence","Meera Devi; Poonam Devi","School Management Committee","N/A"'
+    '1,"Rajender Kumar Chaudhary",OBC,Jat,54,Male,Advocate/Farmer,"BA, LLB, LLM (Pursuing)",1985,9012239999,rajender.chaudhary@example.com,No adverse records,"Belief in party ideology; long family history with party","College-days party youth wing; strong administrative connections","Limited digital campaign experience","Ram Singh (Ex HM, 5x MLA); Furkan Ahmed (MLA)","Ward President (2010-2015); DCC Member (2018-present)","Nagar Palika 2019 (Won); Assembly 2022 (Runner-up)"',
+    '2,"Aasma Parveen",General,Sheikh,42,Female,School Teacher,"MA (Education)",2007,9897426789,aasma.parveen@example.com,Clean record,"Strong grassroots rapport in wards 4-7; education focus","Women\'s SHG networks; good booth mobilization","Limited funding base","Pradeep Kumar (Councillor); Neelam Devi (ZP Member)","Ward Education Committee (2015-2019)","Ward 6 Municipal Election 2019 (Won)"',
+    '3,"Vikram Singh",SC,Chamar,39,Male,Small Business Owner,B.Com,2010,9876542345,vikram.singh@example.com,No cases,"Entrepreneur background; strong youth outreach","Strong union connections; event organization skills","New to party committees","Mahesh Ram (Ex DCC Gen Secy); Poonam Bala (PCC Member)","Block Youth President (2021-present)","First-time contender"',
+    '4,"Sudhir Shandilya",General,Brahmin,49,Male,Business/Farmer,MA,1996,9410111515,sudhir.shandilya@example.com,No criminal record,"Relief provider mindset; party strengthening focus","NSUI Best District President Award 2005; Kisan Congress VP 2020","Needs more grassroots presence","Multiple senior party leaders","NSUI City President (1996-1998); NSUI District President (1998-2007)",No elections contested',
+    '5,"Ritu Kandiyal",General,Thakur,44,Female,Business,BA,2000,9897427777,ritu.kandiyal@example.com,Clean,"25 years party experience; women\'s group activation","Good hold in ladies and youth groups","Needs broader coalition building","Senior women leaders","Mahila Congress VP (2003-2006); State GS (2011-2013); INTUC District President",No direct elections'
   ].join('\n');
+
   document.getElementById('templateLink').href = URL.createObjectURL(new Blob([templateCSV], {type:'text/csv'}));
 
   /* State */
@@ -189,19 +206,20 @@
   const sampleBtn  = document.getElementById('sampleBtn');
   const previewDiv = document.getElementById('preview');
 
-  /* Load CSV */
+  /* Load CSV - FIXED ERROR HERE */
   csvInput.addEventListener('change', async ()=>{
     clearError(); records = []; previewDiv.innerHTML=''; previewBtn.disabled = true; printBtn.disabled = true;
-    const f = csvInput.files && csvFile.files[0];
+    const f = csvInput.files && csvInput.files[0]; // FIXED: was csvFile.files[0]
     if(!f) return;
-    if(!/\.csv$/i.test(f.name)){ showError('Please upload a CSV (not PDF).'); return; }
-    if(f.size > 12 * 1024 * 1024){ showError('CSV too large (>12MB).'); return; }
+    if(!/\.csv$/i.test(f.name)){ showError('Please upload a CSV file (not PDF or other format).'); return; }
+    if(f.size > 12 * 1024 * 1024){ showError('CSV file too large (>12MB).'); return; }
 
     setBusy(true);
     try{
       const text = await f.text();
       const rows = parseCSV(text).filter(r => r.some(c => String(c).trim()!==''));
-      if(rows.length<2){ showError('CSV has no data rows.'); return; }
+      if(rows.length<2){ showError('CSV has no data rows.'); setBusy(false); return; }
+      
       const headerRaw = rows[0];
       const headerNorm = headerRaw.map(h=>norm(h));
       const backMap = {};
@@ -209,15 +227,22 @@
         const idx = headerNorm.indexOf(norm(req));
         backMap[req] = idx>=0 ? idx : null;
       });
+      
       const missing = HEADERS.filter(k => backMap[k]===null);
-      if(missing.length){ showError('CSV missing required columns: ' + missing.join(', ')); return; }
+      if(missing.length){ showError('CSV missing required columns: ' + missing.join(', ')); setBusy(false); return; }
 
       records = rows.slice(1).map(r=>{
-        const obj={}; HEADERS.forEach(k => { const idx=backMap[k]; obj[k]= idx!==null ? (r[idx] ?? '') : ''; });
+        const obj={}; 
+        HEADERS.forEach(k => { 
+          const idx=backMap[k]; 
+          obj[k]= idx!==null ? (r[idx] ?? '') : ''; 
+        });
         return obj;
       }).filter(o => Object.values(o).some(v => String(v).trim()!==''));
-      if(!records.length){ showError('CSV has 0 data rows.'); return; }
-      previewBtn.disabled = false; printBtn.disabled = false;
+      
+      if(!records.length){ showError('CSV has no valid data rows.'); setBusy(false); return; }
+      previewBtn.disabled = false; 
+      printBtn.disabled = false;
     }catch(e){
       showError('CSV parse failed: ' + (e?.message||e));
     }finally{
@@ -225,89 +250,116 @@
     }
   });
 
-  /* Optional Preview on page */
+  /* Preview on page */
   previewBtn.addEventListener('click', ()=>{
     previewDiv.innerHTML='';
     records.forEach((r,i)=>{
-      const el=document.createElement('div'); el.className='sheet';
+      const el=document.createElement('div'); 
+      el.className='sheet';
       el.innerHTML = `
-        <h3>${i+1}. ${esc(r.name||'Unnamed')} <span class="muted small">(${esc(r.category||'')}${r.caste?'/'+esc(r.caste):''})</span></h3>
+        <h3>Preference ${r.preference||i+1}: ${esc(r.name||'Unnamed')} <span class="muted small">(${esc(r.category||'')}${r.caste?'/'+esc(r.caste):''})</span></h3>
         <div class="kv small">
           <strong>Name</strong><div>${esc(r.name||'')}</div>
           <strong>Category/Caste</strong><div>${esc(r.category||'')}${r.caste?'/'+esc(r.caste):''}</div>
-          <strong>Age</strong><div>${esc(r.age||'')}</div>
+          <strong>Age</strong><div>${esc(r.age||'')} ${r.gender ? '(' + esc(r.gender) + ')' : ''}</div>
           <strong>Occupation</strong><div>${esc(r.occupation||'')}</div>
           <strong>Education</strong><div>${esc(r.education||'')}</div>
-          <strong>Year Joined</strong><div>${esc(r.joined||'')}</div>
+          <strong>Year Joined</strong><div>${esc(r.year_joined||'')}</div>
           <strong>Phone</strong><div>${esc(maskPhone(r.phone))}</div>
-          <strong>Record</strong><div>${esc(r.record||'')}</div>
+          <strong>Email</strong><div>${esc(maskEmail(r.email))}</div>
         </div>
         <hr/>
-        <div class="small"><strong>Rationale.</strong> ${esc(r.rationale||'')}</div>
-        <div class="small"><strong>Strengths.</strong> ${esc(r.strengths||'')}</div>
-        <div class="small"><strong>Weaknesses.</strong> ${esc(r.weaknesses||'')}</div>
-        <div class="small"><strong>Proposers.</strong> ${esc(r.proposers||'')}</div>
-        <div class="small"><strong>Positions Held.</strong> ${esc(r.positions||'')}</div>
-        <div class="small"><strong>Elections Contested.</strong> ${esc(r.elections||'')}</div>
+        <div class="small"><strong>Criminal Record:</strong> ${esc(r.criminal_record||'No records')}</div>
+        <div class="small"><strong>Rationale:</strong> ${esc(r.rationale||'')}</div>
+        <div class="small"><strong>Strengths:</strong> ${esc(r.strengths||'')}</div>
+        <div class="small"><strong>Weaknesses:</strong> ${esc(r.weaknesses||'')}</div>
+        <div class="small"><strong>Proposers:</strong> ${esc(r.proposers||'')}</div>
+        <div class="small"><strong>Positions Held:</strong> ${esc(r.positions_held||'')}</div>
+        <div class="small"><strong>Elections Contested:</strong> ${esc(r.elections_contested||'')}</div>
       `;
       previewDiv.appendChild(el);
     });
   });
 
-  /* Open high-quality print window (Save as PDF) */
+  /* Generate professional PDF */
   function openPrintWindow(list){
     const w = window.open('', '_blank');
     const today = new Date();
     const dateStr = today.toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
-    const esc2 = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const masked = v => { const d=String(v||'').replace(/\D/g,''); return d?('******'+d.slice(-4)):""; };
-
+    
     const pages = [];
-
-    // Cover (optional); Commented if you only want one-pagers.
-    // pages.push(`
-    //   <div class="print-page cover">
-    //     <div class="print-title">Candidate Dossiers</div>
-    //     <div class="print-rule"></div>
-    //     <div class="meta">Prepared: ${esc2(dateStr)}</div>
-    //     <div class="meta">Total candidates: ${list.length}</div>
-    //     <div class="pagenum"></div>
-    //   </div>
-    // `);
-
-    // One-pager per candidate
+    
+    // Generate one page per candidate
     list.forEach((r,idx)=>{
-      const chip = esc2([r.category,r.caste].filter(Boolean).join('/'));
-      const kv = `
-        <div class="kv2">
-          <div class="lab">Name</div><div class="val">${esc2(r.name||'')}</div>
-          <div class="lab">Category/Caste</div><div class="val">${chip}</div>
-          <div class="lab">Age</div><div class="val">${esc2(r.age||'')}</div>
-          <div class="lab">Occupation</div><div class="val">${esc2(r.occupation||'')}</div>
-          <div class="lab">Education</div><div class="val">${esc2(r.education||'')}</div>
-          <div class="lab">Year Joined</div><div class="val">${esc2(r.joined||'')}</div>
-          <div class="lab">Phone</div><div class="val">${esc2(masked(r.phone))}</div>
-          <div class="lab">Record</div><div class="val">${esc2(r.record||'')}</div>
-        </div>`;
-      const section = (label, text)=> text ? `
-        <div class="sec">
-          <div class="hd"><div class="goldbar"></div><span>${label}.</span></div>
-          <div class="para">${esc2(text)}</div>
-        </div>` : '';
-
+      const categoryInfo = [r.category, r.caste].filter(Boolean).join('/') || '—';
+      
       pages.push(`
         <div class="print-page">
-          <div class="print-title">${esc2(r.name || 'Unnamed')}</div>
-          <div class="print-rule"></div>
-          <div class="chip">${chip || '—'}</div>
-          ${kv}
-          ${section('Rationale', r.rationale)}
-          ${section('Strengths', r.strengths)}
-          ${section('Weaknesses', r.weaknesses)}
-          ${section('Proposers', r.proposers)}
-          ${section('Positions Held', r.positions)}
-          ${section('Elections Contested', r.elections)}
-          <div class="pagenum"></div>
+          <div class="watermark">MMSF Format • Privacy Protected</div>
+          
+          <div class="print-header">
+            <h1 class="print-title">Candidate Dossier</h1>
+            <div class="print-subtitle">Ummidvaar Dastaavez • ${dateStr}</div>
+          </div>
+          
+          <div class="cat-badge">Preference ${r.preference || (idx+1)} — ${categoryInfo}</div>
+          
+          <h2 style="margin:0 0 5mm 0;color:#1e3a8a;font-size:18pt;">${esc(r.name || 'Name Not Provided')}</h2>
+          
+          <div class="info-grid">
+            <div class="label">Name</div><div class="value">${esc(r.name||'—')}</div>
+            <div class="label">Category/Caste</div><div class="value">${categoryInfo}</div>
+            <div class="label">Age</div><div class="value">${esc(r.age||'—')} ${r.gender ? '(' + esc(r.gender) + ')' : ''}</div>
+            <div class="label">Occupation</div><div class="value">${esc(r.occupation||'—')}</div>
+            <div class="label">Education</div><div class="value">${esc(r.education||'—')}</div>
+            <div class="label">Year Joined</div><div class="value">${esc(r.year_joined||'—')}</div>
+            <div class="label">Phone</div><div class="value">${esc(maskPhone(r.phone))}</div>
+            <div class="label">Email</div><div class="value">${esc(maskEmail(r.email))}</div>
+          </div>
+          
+          ${r.criminal_record ? `
+          <div class="section">
+            <div class="section-header"><div class="gold-bar"></div><span>Criminal Record</span></div>
+            <div class="section-content">${esc(r.criminal_record)}</div>
+          </div>` : ''}
+          
+          ${r.rationale ? `
+          <div class="section">
+            <div class="section-header"><div class="gold-bar"></div><span>Rationale</span></div>
+            <div class="section-content">${esc(r.rationale)}</div>
+          </div>` : ''}
+          
+          ${r.strengths ? `
+          <div class="section">
+            <div class="section-header"><div class="gold-bar"></div><span>Strengths</span></div>
+            <div class="section-content">${esc(r.strengths)}</div>
+          </div>` : ''}
+          
+          ${r.weaknesses ? `
+          <div class="section">
+            <div class="section-header"><div class="gold-bar"></div><span>Weaknesses</span></div>
+            <div class="section-content">${esc(r.weaknesses)}</div>
+          </div>` : ''}
+          
+          ${r.proposers ? `
+          <div class="section">
+            <div class="section-header"><div class="gold-bar"></div><span>Proposers</span></div>
+            <div class="section-content">${esc(r.proposers)}</div>
+          </div>` : ''}
+          
+          ${r.positions_held ? `
+          <div class="section">
+            <div class="section-header"><div class="gold-bar"></div><span>Positions Held</span></div>
+            <div class="section-content">${esc(r.positions_held)}</div>
+          </div>` : ''}
+          
+          ${r.elections_contested ? `
+          <div class="section">
+            <div class="section-header"><div class="gold-bar"></div><span>Elections Contested</span></div>
+            <div class="section-content">${esc(r.elections_contested)}</div>
+          </div>` : ''}
+          
+          <div class="pagenum">Page ${idx + 1}</div>
         </div>
       `);
     });
@@ -317,50 +369,57 @@
       <html>
       <head>
         <meta charset="utf-8"/>
-        <title>Dossiers</title>
-        <style>${css} body{margin:0} .print-wrap{counter-reset: page} .print-page .pagenum:after{counter-increment: page; content: "Page " counter(page);} </style>
+        <title>Candidate Dossiers - ${dateStr}</title>
+        <style>${css}</style>
       </head>
       <body>
         <div class="print-wrap">${pages.join('')}</div>
-        <script>setTimeout(function(){window.print()},350)</script>
+        <script>setTimeout(function(){window.print()},500)</${'script'}>
       </body>
       </html>
     `;
-    w.document.open(); w.document.write(html); w.document.close();
+    w.document.open(); 
+    w.document.write(html); 
+    w.document.close();
   }
 
-  /* Print actual CSV */
+  /* Generate PDF from CSV */
   printBtn.addEventListener('click', ()=>{
-    if(!records.length){ showError('Please upload a CSV first.'); return; }
-    // Sort by preference if present
-    const sorted = [...records].sort((a,b)=> (String(a.preference||'').localeCompare(String(b.preference||''),'en',{numeric:true})));
+    if(!records.length){ showError('Please upload a CSV file first.'); return; }
+    const sorted = [...records].sort((a,b)=> {
+      const prefA = parseInt(a.preference) || 999;
+      const prefB = parseInt(b.preference) || 999;
+      return prefA - prefB;
+    });
     openPrintWindow(sorted);
   });
 
-  /* Instant sample (one-pager) for your demo */
+  /* Sample one-pager */
   sampleBtn.addEventListener('click', ()=>{
     const sample = [{
       preference:'1',
-      name:'Anita Devi',
-      category:'SC',
-      caste:'Mahadalit',
-      age:'34',
-      occupation:'Anganwadi Worker',
-      education:'Class 12',
-      joined:'2012',
-      phone:'9891123456',
-      record:'Active in SHG; no adverse records',
-      rationale:'Strong community rapport; consistent attendance',
-      strengths:'Grassroots presence; trusted by women’s groups',
-      weaknesses:'Limited formal political experience',
-      proposers:'Sita Kumari; Renu Devi',
-      positions:'Panchayat Education Committee Member',
-      elections:'Contested Ward Member 2021'
+      name:'Rajender Kumar Chaudhary',
+      category:'OBC',
+      caste:'Jat',
+      age:'54',
+      gender:'Male',
+      occupation:'Advocate / Farmer',
+      education:'BA, LLB, LLM (Pursuing)',
+      year_joined:'1985',
+      phone:'9012239999',
+      email:'rajender.chaudhary@example.com',
+      criminal_record:'No adverse records',
+      rationale:'Belief in Congress ideology; long family history with party. True soldier of the party with honest loyalty and dedication.',
+      strengths:'College-days NSUI involvement; strong administrative connections; good hold in area administration',
+      weaknesses:'Limited digital campaign experience',
+      proposers:'Ram Singh Saini (Ex Home Minister, 5x MLA); Furkan Ahmed (MLA); Dr. Rakam Singh (Ex State Minister)',
+      positions_held:'Ward President (2010-2015); DCC Member (2018-present); NSUI Vice President (1990-1993)',
+      elections_contested:'Nagar Palika Election 2019 (Won); Assembly Election 2022 (Runner-up)'
     }];
     openPrintWindow(sample);
   });
 
-  // Kill stale SW if any
+  // Clean up any old service workers
   if('serviceWorker' in navigator){
     navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});
   }
