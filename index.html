@@ -2,23 +2,44 @@
 <html lang="en">
 <head>
 <meta charset="utf-8"/>
-<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>Ummidvaar Dastaavez — Candidate Dossiers</title>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<meta http-equiv="Cache-Control" content="no-store"/>
+
+<!-- Inter font (degrades to system UI if blocked) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
 <style>
   :root{
-    --blue:#276fbf; --gold:#ffd54d; --ink:#111; --muted:#5b677a;
-    --bg:#ffffff; --card:#ffffff; --border:#e6e8ee; --soft:#f6f7fb;
+    /* restrained, professional palette */
+    --blue:#2568c0;   /* header rule, accents */
+    --gold:#ffd54d;   /* section chips */
+    --ink:#0e1218;    /* primary text */
+    --muted:#5f6b7a;  /* secondary text */
+    --bg:#ffffff;     /* page bg */
+    --card:#ffffff;   /* cards */
+    --border:#e7e9ef; /* dividers */
+    --soft:#f6f7fb;   /* subtle highlight */
   }
   [data-theme="dark"]{
     --bg:#0f1115; --card:#151923; --ink:#e9eef7; --muted:#b8c0cc;
-    --border:#2b3240; --soft:#1a2130; --blue:#61a8ff; --gold:#f6c84a;
+    --border:#2b3240; --soft:#1a2130; --blue:#5ba0ff; --gold:#f2c441;
   }
-  html,body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif}
+
+  html,body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font:14px/1.55 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
   .wrap{max-width:1000px;margin:0 auto;padding:20px}
-  header{display:flex;align-items:center;justify-content:space-between}
-  h1{margin:0;font-size:1.7rem;letter-spacing:.2px}
+  header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  h1{margin:0;font-size:1.7rem;font-weight:800;letter-spacing:.2px}
+
   .sunmoon{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--border);background:var(--card);cursor:pointer}
   .sunmoon svg{width:18px;height:18px}
 
@@ -29,17 +50,40 @@
   .btn.secondary{background:var(--blue);color:#fff}
   input[type="file"]{display:block;margin-top:6px}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-  .error{border-left:4px solid #d33;background:#fff2f2;color:#7a0c0c;padding:10px;border-radius:10px;margin-top:10px}
+  .error{border-left:4px solid #d33;background:#fff2f2;color:#7a0c0c;padding:10px;border-radius:10px;margin-top:10px;display:none}
   [data-theme="dark"] .error{background:#2a1111;color:#ffd0d0}
+  .small{font-size:.92rem}
 
   #preview{max-width:860px;margin:0 auto}
   .sheet{border:1px solid var(--border);border-radius:10px;padding:16px;margin:12px 0;background:#fff;color:#000}
-  [data-theme="dark"] .sheet{background:#fff;color:#000} /* keep print preview true-to-output */
+  [data-theme="dark"] .sheet{background:#fff;color:#000}
   .sheet h3{margin:.2rem 0 .6rem 0}
   .kv{display:grid;grid-template-columns:170px 1fr 170px 1fr;gap:6px 12px}
   .kv strong{white-space:nowrap}
-  hr{border:0;border-top:1px solid #ddd;margin:12px 0}
-  .small{font-size:.92rem}
+  hr{border:0;border-top:1px solid var(--border);margin:12px 0}
+
+  /* Print layout (high-quality, A4) */
+  .print-wrap{font:11.5pt/1.45 "Inter", system-ui, Arial, sans-serif; color:#131821}
+  .print-page{page-break-after:always; padding:22mm 18mm; position:relative}
+  .print-title{font:800 26pt/1.2 "Inter", system-ui; margin:0 0 10mm 0; letter-spacing:.1px}
+  .print-rule{height:2px;background:var(--blue);margin:3mm 0 8mm 0}
+  .chip{display:inline-block;background:var(--gold);color:#111;padding:2px 8px;border-radius:8px;font:700 10pt "Inter", system-ui}
+  .kv2{display:grid;grid-template-columns:36mm 64mm 36mm 64mm;gap:3mm 6mm;margin-top:3mm}
+  .kv2 .lab{font:700 10pt "Inter", system-ui;color:#101318}
+  .kv2 .val{font:10pt "Inter", system-ui;color:#2b313a}
+  .sec{margin-top:6mm}
+  .sec .hd{display:flex;align-items:center;gap:5mm;margin:0 0 2mm 0}
+  .goldbar{width:14mm;height:2.2mm;background:var(--gold)}
+  .hd span{font:700 11pt "Inter", system-ui}
+  .para{font:10.5pt "Inter", system-ui; white-space:pre-wrap; color:#2b313a}
+  .pagenum{position:absolute;bottom:10mm;right:18mm;font:600 9pt "Inter", system-ui;color:#6b7280}
+
+  .cover .print-title{font-size:28pt}
+  .cover .meta{font:600 12pt "Inter", system-ui;margin-top:4mm;color:#2b313a}
+  .cover .print-rule{height:3px}
+
+  @page{size:A4;margin:0}
+  @media print{ body{background:#fff} }
 </style>
 </head>
 <body>
@@ -52,20 +96,16 @@
     </button>
   </header>
 
-  <!-- Visible startup / runtime status -->
-  <div id="startup" class="error" style="display:none"></div>
-
   <section class="card">
-    <h2>What this does and why it matters</h2>
+    <h2>Why this tool</h2>
     <p>
-      This tool converts a structured <span class="hl">CSV</span> into a high-quality <span class="hl">PDF dossier</span> — one page (or more) per candidate —
-      with consistent typography, clear sections, and page numbers. Each CSV row becomes a reusable <em>content block</em>.
+      Upload a structured <span class="hl">CSV</span> and get a print-ready <span class="hl">PDF dossier</span>—cover plus one page per candidate—with consistent typography,
+      disciplined spacing, section badges, and page numbers. Phone numbers are <strong>mandatorily masked</strong> (e.g., <code>******2345</code>).
     </p>
-    <p><strong>Privacy-first:</strong> phone numbers are <strong>mandatorily masked</strong> to the last four digits (e.g., <code>******2345</code>).</p>
-    <div class="muted">
-      Required CSV headers (names are case/space/underscore tolerant):<br/>
+    <p class="muted">
+      Required CSV headers (names are tolerant for spaces/underscores/case):<br/>
       <code>preference, name, category, caste, age, occupation, education, joined, phone, record, rationale, strengths, weaknesses, proposers, positions, elections</code>
-    </div>
+    </p>
   </section>
 
   <section class="card">
@@ -75,14 +115,13 @@
         <label><strong>Upload CSV</strong></label>
         <input id="csvFile" type="file" accept=".csv,text/csv"/>
       </div>
-      <button id="downloadBtn" class="btn secondary" disabled>Download PDF</button>
+      <button id="printBtn" class="btn secondary" disabled>Open Print-to-PDF</button>
       <button id="previewBtn" class="btn" disabled>Preview on Page</button>
       <a id="templateLink" class="btn" download="sample_candidate_data.csv">Download CSV Template</a>
-      <button id="samplePdfBtn" class="btn">Download Sample Output PDF</button>
       <div id="busy" class="muted" style="display:none">Working…</div>
     </div>
-    <div id="fileError" class="error" style="display:none"></div>
-    <p class="muted small">Use your own CSV if headers match. Phone masking is automatic and cannot be turned off.</p>
+    <div id="fileError" class="error"></div>
+    <p class="muted small">Use your own CSV if headers match. Masking is automatic and cannot be turned off.</p>
   </section>
 
   <section class="card">
@@ -95,18 +134,9 @@
   </footer>
 </div>
 
-<!-- External libs (primary) -->
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js" defer></script>
-<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js" defer></script>
-
-<!-- App logic — robust loader & safe init -->
-<script defer>
+<script>
 (function(){
-  const startup = document.getElementById('startup');
-  function showStartup(msg){ startup.style.display='block'; startup.textContent = msg; }
-  function clearStartup(){ startup.style.display='none'; startup.textContent=''; }
-
-  // Theme toggle (safe regardless of libs)
+  /* Theme toggle */
   const app = document.getElementById('app'), sun = document.getElementById('sunIcon'), moon = document.getElementById('moonIcon');
   document.getElementById('themeToggle').addEventListener('click', ()=>{
     const cur = app.getAttribute('data-theme')==='dark' ? 'light':'dark';
@@ -114,325 +144,209 @@
     if(cur==='dark'){sun.style.display='none';moon.style.display='block';} else {sun.style.display='block';moon.style.display='none';}
   });
 
-  // Wait for external libs; try fallback CDNs if missing
-  function libsReady(){
-    return (window.Papa && window.jspdf && window.jspdf.jsPDF);
-  }
+  /* Helpers */
+  const HEADERS = "preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections".split(',');
+  const norm = s => String(s||'').trim().toLowerCase().replace(/\s+/g,'').replace(/_/g,'');
+  const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const maskPhone = v => { const d = String(v||'').replace(/\\D/g,''); return d ? '******' + d.slice(-4) : ''; };
 
-  function injectFallback(src, onload){
-    const s = document.createElement('script');
-    s.src = src; s.onload = onload; s.onerror = ()=>showStartup('Failed to load: ' + src);
-    document.head.appendChild(s);
-  }
+  function showError(msg){ const e=document.getElementById('fileError'); e.style.display='block'; e.textContent=msg; }
+  function clearError(){ const e=document.getElementById('fileError'); e.style.display='none'; e.textContent=''; }
+  function setBusy(on){ document.getElementById('busy').style.display = on?'inline':'none'; }
 
-  function ensureLibs(then){
-    let attempts = 0;
-    const tick = ()=>{
-      attempts++;
-      if(libsReady()){ then(); return; }
-      if(attempts===10){
-        // try fallbacks
-        if(!window.Papa){
-          injectFallback('https://unpkg.com/papaparse@5.4.1/papaparse.min.js', ()=>{});
-        }
-        if(!(window.jspdf && window.jspdf.jsPDF)){
-          injectFallback('https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js', ()=>{});
-        }
+  /* Minimal, robust CSV parser (quoted fields supported) */
+  function parseCSV(text){
+    const out=[]; let row=[], cur='', q=false;
+    for(let i=0;i<text.length;i++){
+      const c=text[i], n=text[i+1];
+      if(q){
+        if(c=='"' && n=='"'){ cur+='"'; i++; }
+        else if(c=='"'){ q=false; }
+        else { cur+=c; }
+      }else{
+        if(c=='"'){ q=true; }
+        else if(c==','){ row.push(cur); cur=''; }
+        else if(c=='\\n'){ row.push(cur); out.push(row); row=[]; cur=''; }
+        else if(c=='\\r'){ /* ignore */ }
+        else { cur+=c; }
       }
-      if(attempts>50){
-        showStartup('Startup error: required libraries failed to load. Check network/CSP.');
-        return;
-      }
-      setTimeout(tick, 100);
-    };
-    tick();
+    }
+    row.push(cur); out.push(row);
+    return out;
   }
 
-  // App once libs are present
-  ensureLibs(()=> {
+  /* Downloadable CSV template */
+  const templateCSV = [
+    HEADERS.join(','),
+    '1,Anita Devi,SC,Mahadalit,34,Anganwadi Worker,Class 12,2012,9891123456,Active in SHG; no adverse records,"Strong community rapport; consistent attendance","Limited formal political experience","Sita Kumari; Renu Devi","Panchayat Education Committee Member","Contested Ward Member 2021"',
+    '2,Rahim Ansari,EBC,Ansari,41,Weaver,Class 10,2008,9876543210,No adverse records,"Respected artisan; youth engagement","Needs support for documentation","Salim Khan; Farida Bano","SHG Treasurer","Contested Ward Member 2016"',
+    '3,Sunita Kumari,General,Bhumihar,29,ASHA Worker,Graduate,2019,9123456789,No adverse records,"High field presence; women\'s networks","Public speaking confidence","Meera Devi; Poonam Devi","School Management Committee","N/A"'
+  ].join('\\n');
+  document.getElementById('templateLink').href = URL.createObjectURL(new Blob([templateCSV], {type:'text/csv'}));
+
+  /* State */
+  let records = [];
+
+  /* Upload */
+  const csvInput = document.getElementById('csvFile');
+  const previewBtn = document.getElementById('previewBtn');
+  const printBtn = document.getElementById('printBtn');
+  const previewDiv = document.getElementById('preview');
+
+  csvInput.addEventListener('change', async ()=>{
+    clearError(); records = []; previewDiv.innerHTML=''; previewBtn.disabled = true; printBtn.disabled = true;
+    const f = csvInput.files && csvInput.files[0];
+    if(!f) return;
+    if(!/\\.csv$/i.test(f.name)){ showError('Please upload a CSV (not PDF).'); return; }
+    if(f.size > 12 * 1024 * 1024){ showError('CSV too large (>12MB).'); return; }
+
+    setBusy(true);
     try{
-      clearStartup();
-      runApp();
+      const text = await f.text();
+      const rows = parseCSV(text).filter(r => r.some(c => String(c).trim()!==''));
+      if(rows.length<2){ showError('CSV has no data rows.'); return; }
+      const headerRaw = rows[0];
+      const headerNorm = headerRaw.map(h=>norm(h));
+      const backMap = {};
+      HEADERS.forEach(req=>{
+        const idx = headerNorm.indexOf(norm(req));
+        backMap[req] = idx>=0 ? idx : null;
+      });
+      const missing = HEADERS.filter(k => backMap[k]===null);
+      if(missing.length){ showError('CSV missing required columns: ' + missing.join(', ')); return; }
+
+      records = rows.slice(1).map(r=>{
+        const obj={}; HEADERS.forEach(k => { const idx=backMap[k]; obj[k]= idx!==null ? (r[idx] ?? '') : ''; });
+        return obj;
+      }).filter(o => Object.values(o).some(v => String(v).trim()!==''));
+      if(!records.length){ showError('CSV has 0 data rows.'); return; }
+      previewBtn.disabled = false; printBtn.disabled = false;
     }catch(e){
-      showStartup('Init crashed: ' + (e?.message||e));
-      console.error(e);
+      showError('CSV parse failed: ' + (e?.message||e));
+    }finally{
+      setBusy(false);
     }
   });
 
-  function runApp(){
-    const { jsPDF } = window.jspdf;
-    if(!jsPDF){ showStartup('jsPDF not available.'); return; }
-    if(!window.Papa){ showStartup('PapaParse not available.'); return; }
-
-    const HEADERS = "preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections".split(',');
-    const norm = s => String(s||'').trim().toLowerCase().replace(/\s+/g,'').replace(/_/g,'');
-    const escHTML  = s => String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const maskPhone = v => { const d = String(v||'').replace(/\\D/g,''); return d ? '******' + d.slice(-4) : ''; };
-
-    // Template CSV available immediately
-    const templateCSV = [
-      HEADERS.join(','),
-      '1,Anita Devi,SC,Mahadalit,34,Anganwadi Worker,Class 12,2012,9891123456,Active in SHG; no adverse records,"Strong community rapport; consistent attendance","Limited formal political experience","Sita Kumari; Renu Devi","Panchayat Education Committee Member","Contested Ward Member 2021"',
-      '2,Rahim Ansari,EBC,Ansari,41,Weaver,Class 10,2008,9876543210,No adverse records,"Respected artisan; youth engagement","Needs support for documentation","Salim Khan; Farida Bano","SHG Treasurer","Contested Ward Member 2016"',
-      '3,Sunita Kumari,General,Bhumihar,29,ASHA Worker,Graduate,2019,9123456789,No adverse records,"High field presence; women\\'s networks","Public speaking confidence","Meera Devi; Poonam Devi","School Management Committee","N/A"'
-    ].join('\\n');
-    const templateLink = document.getElementById('templateLink');
-    templateLink.href = URL.createObjectURL(new Blob([templateCSV], { type: 'text/csv' }));
-
-    // Elements
-    const csvInput    = document.getElementById('csvFile');
-    const downloadBtn = document.getElementById('downloadBtn');
-    const previewBtn  = document.getElementById('previewBtn');
-    const samplePdfBtn= document.getElementById('samplePdfBtn');
-    const fileError   = document.getElementById('fileError');
-    const busy        = document.getElementById('busy');
-    const previewDiv  = document.getElementById('preview');
-    let rows = [];
-
-    function showError(msg){ fileError.style.display='block'; fileError.textContent = msg; }
-    function clearError(){ fileError.style.display='none'; fileError.textContent=''; }
-    function setBusy(on){ busy.style.display = on ? 'inline':'none'; }
-    function enableActions(on){ downloadBtn.disabled = !on; previewBtn.disabled = !on; }
-
-    function downloadBlob(blob, filename){
-      try{
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        setTimeout(()=>URL.revokeObjectURL(url), 2000);
-      }catch(e){
-        showError('Browser blocked download: ' + (e?.message||e));
-      }
-    }
-
-    csvInput.addEventListener('change', ()=>{
-      clearError(); enableActions(false); rows = [];
-      const f = csvInput.files && csvInput.files[0];
-      if(!f) return;
-      if(!/\\.csv$/i.test(f.name)){ showError('Please upload a CSV (not PDF).'); return; }
-      if(f.size > 12 * 1024 * 1024){ showError('CSV too large (>12MB).'); return; }
-
-      Papa.parse(f, {
-        header:true, skipEmptyLines:true, transformHeader:h=>norm(h),
-        complete: res=>{
-          if(res.errors && res.errors.length){ showError('CSV parse error: ' + res.errors[0].message); return; }
-          const fieldsNorm = (res.meta.fields||[]).map(norm);
-          const backMap = {}; HEADERS.forEach(k=>{ const nk = norm(k); const idx = fieldsNorm.indexOf(nk); backMap[k] = idx===-1 ? null : res.meta.fields[idx]; });
-          const missing = HEADERS.filter(k => backMap[k]===null);
-          if(missing.length){ showError('CSV missing required columns: ' + missing.join(', ')); return; }
-
-          rows = (res.data||[]).map(r=>{ const o = {}; HEADERS.forEach(k => { const src = backMap[k]; o[k] = src ? r[src] : ''; }); return o; })
-                               .filter(r => Object.values(r).some(v => String(v).trim()!==''));
-          if(!rows.length){ showError('CSV has 0 data rows.'); return; }
-          enableActions(true);
-        }
-      });
+  /* On-page Preview */
+  previewBtn.addEventListener('click', ()=>{
+    previewDiv.innerHTML='';
+    records.forEach((r,i)=>{
+      const el=document.createElement('div'); el.className='sheet';
+      el.innerHTML = `
+        <h3>${i+1}. ${esc(r.name||'Unnamed')} <span class="muted small">(${esc(r.category||'')}${r.caste?'/'+esc(r.caste):''})</span></h3>
+        <div class="kv small">
+          <strong>Name</strong><div>${esc(r.name||'')}</div>
+          <strong>Category/Caste</strong><div>${esc(r.category||'')}${r.caste?'/'+esc(r.caste):''}</div>
+          <strong>Age</strong><div>${esc(r.age||'')}</div>
+          <strong>Occupation</strong><div>${esc(r.occupation||'')}</div>
+          <strong>Education</strong><div>${esc(r.education||'')}</div>
+          <strong>Year Joined</strong><div>${esc(r.joined||'')}</div>
+          <strong>Phone</strong><div>${esc(maskPhone(r.phone))}</div>
+          <strong>Record</strong><div>${esc(r.record||'')}</div>
+        </div>
+        <hr/>
+        <div class="small"><strong>Rationale.</strong> ${esc(r.rationale||'')}</div>
+        <div class="small"><strong>Strengths.</strong> ${esc(r.strengths||'')}</div>
+        <div class="small"><strong>Weaknesses.</strong> ${esc(r.weaknesses||'')}</div>
+        <div class="small"><strong>Proposers.</strong> ${esc(r.proposers||'')}</div>
+        <div class="small"><strong>Positions Held.</strong> ${esc(r.positions||'')}</div>
+        <div class="small"><strong>Elections Contested.</strong> ${esc(r.elections||'')}</div>
+      `;
+      previewDiv.appendChild(el);
     });
+  });
 
-    previewBtn.addEventListener('click', ()=>{
-      clearError(); previewDiv.innerHTML = '';
-      rows.forEach((r, i)=>{
-        const el = document.createElement('div'); el.className = 'sheet';
-        el.innerHTML = `
-          <h3>${i+1}. ${escHTML(r.name||'Unnamed')} <span class="muted small">(${escHTML(r.category||'')}${r.caste?'/'+escHTML(r.caste):''})</span></h3>
-          <div class="kv small">
-            <strong>Name</strong><div>${escHTML(r.name||'')}</div>
-            <strong>Category/Caste</strong><div>${escHTML(r.category||'')}${r.caste?'/'+escHTML(r.caste):''}</div>
-            <strong>Age</strong><div>${escHTML(r.age||'')}</div>
-            <strong>Occupation</strong><div>${escHTML(r.occupation||'')}</div>
-            <strong>Education</strong><div>${escHTML(r.education||'')}</div>
-            <strong>Year Joined</strong><div>${escHTML(r.joined||'')}</div>
-            <strong>Phone</strong><div>${escHTML(maskPhone(r.phone))}</div>
-            <strong>Record</strong><div>${escHTML(r.record||'')}</div>
+  /* High-quality print window (Save as PDF) */
+  printBtn.addEventListener('click', ()=>{
+    if(!records.length){ showError('Please upload a CSV first.'); return; }
+
+    const w = window.open('', '_blank');
+    const today = new Date();
+    const dateStr = today.toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
+    const esc2 = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const masked = v => { const d=String(v||'').replace(/\\D/g,''); return d?('******'+d.slice(-4)):""; };
+
+    const pages = [];
+    // Cover
+    pages.push(`
+      <div class="print-page cover">
+        <div class="print-title">Candidate Dossiers</div>
+        <div class="print-rule"></div>
+        <div class="meta">Prepared: ${esc2(dateStr)}</div>
+        <div class="meta">Total candidates: ${records.length}</div>
+        <div class="pagenum"></div>
+      </div>
+    `);
+    // Per-candidate pages
+    records
+      .sort((a,b)=> (String(a.preference||'').localeCompare(String(b.preference||''), 'en', {numeric:true})))
+      .forEach((r,idx)=>{
+        const kv = `
+          <div class="kv2">
+            <div class="lab">Name</div><div class="val">${esc2(r.name||'')}</div>
+            <div class="lab">Category/Caste</div><div class="val">${esc2([r.category,r.caste].filter(Boolean).join('/'))}</div>
+            <div class="lab">Age</div><div class="val">${esc2(r.age||'')}</div>
+            <div class="lab">Occupation</div><div class="val">${esc2(r.occupation||'')}</div>
+            <div class="lab">Education</div><div class="val">${esc2(r.education||'')}</div>
+            <div class="lab">Year Joined</div><div class="val">${esc2(r.joined||'')}</div>
+            <div class="lab">Phone</div><div class="val">${esc2(masked(r.phone))}</div>
+            <div class="lab">Record</div><div class="val">${esc2(r.record||'')}</div>
+          </div>`;
+        const narrative = (label, text)=> text ? `
+          <div class="sec">
+            <div class="hd"><div class="goldbar"></div><span>${label}.</span></div>
+            <div class="para">${esc2(text)}</div>
+          </div>` : '';
+
+        pages.push(`
+          <div class="print-page">
+            <div class="print-title">${idx+1}. ${esc2(r.name || 'Unnamed')}</div>
+            <div class="print-rule"></div>
+            <div class="chip">${esc2([r.category,r.caste].filter(Boolean).join('/'))}</div>
+            ${kv}
+            ${narrative('Rationale', r.rationale)}
+            ${narrative('Strengths', r.strengths)}
+            ${narrative('Weaknesses', r.weaknesses)}
+            ${narrative('Proposers', r.proposers)}
+            ${narrative('Positions Held', r.positions)}
+            ${narrative('Elections Contested', r.elections)}
+            <div class="pagenum"></div>
           </div>
-          <hr/>
-          <div class="small"><strong>Rationale.</strong> ${escHTML(r.rationale||'')}</div>
-          <div class="small"><strong>Strengths.</strong> ${escHTML(r.strengths||'')}</div>
-          <div class="small"><strong>Weaknesses.</strong> ${escHTML(r.weaknesses||'')}</div>
-          <div class="small"><strong>Proposers.</strong> ${escHTML(r.proposers||'')}</div>
-          <div class="small"><strong>Positions Held.</strong> ${escHTML(r.positions||'')}</div>
-          <div class="small"><strong>Elections Contested.</strong> ${escHTML(r.elections||'')}</div>
-        `;
-        previewDiv.appendChild(el);
-      });
-    });
-
-    function buildPdf(fromRows){
-      const doc = new jsPDF({ unit:'mm', format:'a4', compress:true });
-      const pageW = doc.internal.pageSize.getWidth();
-      const pageH = doc.internal.pageSize.getHeight();
-      const M = { l:14, r:14, t:16, b:16 };
-      const W = pageW - M.l - M.r;
-      const BLUE = [39,111,191], GOLD=[255,213,77], GREY=[230,232,238], INK=[20,24,31];
-
-      const header = () => {
-        doc.setDrawColor(...BLUE); doc.setLineWidth(0.7);
-        doc.line(M.l, M.t-6, pageW - M.r, M.t-6);
-        doc.setFont('helvetica','bold'); doc.setFontSize(11);
-        doc.setTextColor(...INK);
-        doc.text('Candidate Dossier', M.l, M.t-8);
-      };
-      const footerAll = () => {
-        const n = doc.getNumberOfPages();
-        for(let i=1;i<=n;i++){
-          doc.setPage(i);
-          doc.setFont('helvetica','normal'); doc.setFontSize(9);
-          doc.setTextColor(90,90,90);
-          doc.text(`Page ${i} of ${n}`, pageW - M.r, pageH - 6, { align:'right' });
-        }
-      };
-      const badge = (label, y) => {
-        doc.setDrawColor(...GOLD); doc.setFillColor(...GOLD);
-        doc.rect(M.l, y-5, 14, 2.2, 'F');
-        doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...INK);
-        doc.text(label + '.', M.l + 18, y-3.3);
-      };
-      const kvGrid = (pairs, y) => {
-        const gap = 6;
-        const Lw = 36, Vw = (W/2) - Lw - gap;
-        const Lw2 = 36, Vw2 = (W/2) - Lw2 - gap;
-        const x1 = M.l, x2 = M.l + Lw + Vw + gap*2;
-        const draw = (lab, val, x, w) => {
-          doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...INK);
-          doc.text(lab, x, y);
-          doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(35,38,45);
-          const wrap = doc.splitTextToSize(String(val||''), w);
-          wrap.forEach((line, i)=> doc.text(line, x, y + 4.8 + i*4.8));
-          return 4.8 + wrap.length*4.8 + 2;
-        };
-        const rows = [];
-        for(let i=0;i<pairs.length;i+=2) rows.push([pairs[i], pairs[i+1] || ['','']]);
-        rows.forEach(([a,b])=>{
-          const h1 = draw(a[0], a[1], x1, Vw);
-          const h2 = draw(b[0], b[1], x2, Vw2);
-          const h = Math.max(h1,h2);
-          y += h;
-          if(y > pageH - M.b - 30){ doc.addPage(); header(); y = M.t; }
-        });
-        doc.setDrawColor(...GREY); doc.setLineWidth(0.25);
-        doc.line(M.l, y, pageW - M.r, y);
-        return y + 3;
-      };
-      const paragraph = (text, y) => {
-        doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(35,38,45);
-        const lines = doc.splitTextToSize(String(text||''), W);
-        let yy = y + 2;
-        for(const line of lines){
-          if(yy > pageH - M.b){ doc.addPage(); header(); yy = M.t; }
-          doc.text(line, M.l, yy);
-          yy += 4.8;
-        }
-        return yy + 2;
-      };
-
-      const today = new Date();
-      const dateStr = today.toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
-      doc.setFont('helvetica','bold'); doc.setFontSize(22); doc.setTextColor(...INK);
-      doc.text('Candidate Dossiers', M.l, 52);
-      doc.setDrawColor(...BLUE); doc.setLineWidth(1.4);
-      doc.line(M.l, 56, pageW - M.r, 56);
-      doc.setFont('helvetica','normal'); doc.setFontSize(12); doc.setTextColor(40,44,52);
-      doc.text(`Prepared: ${dateStr}`, M.l, 70);
-      doc.text(`Total candidates: ${fromRows.length}`, M.l, 78);
-      doc.addPage();
-
-      let first = true;
-      fromRows.forEach((r, idx)=>{
-        if(!first) doc.addPage(); first=false;
-        header();
-        let y = M.t + 7;
-        doc.setDrawColor(...BLUE); doc.setFillColor(...BLUE);
-        doc.rect(M.l, y-6, 3, 10, 'F');
-        doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(...INK);
-        doc.text(`${idx+1}. ${r.name || 'Unnamed'}`, M.l + 6, y);
-        doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(60,65,73);
-        doc.text(`${[r.category||'', r.caste||''].filter(Boolean).join('/')}`, M.l + 6, y+6);
-        doc.setDrawColor(...BLUE); doc.setLineWidth(0.6);
-        doc.line(M.l, y+8, pageW - M.r, y+8);
-        y += 14;
-
-        const kv = [
-          ['Name', r.name],
-          ['Category/Caste', [r.category, r.caste].filter(Boolean).join('/')],
-          ['Age', r.age],
-          ['Occupation', r.occupation],
-          ['Education', r.education],
-          ['Year Joined', r.joined],
-          ['Phone', r.phone ? (r.phone) : ''],
-          ['Record', r.record]
-        ];
-        kv[6][1] = (function(v){ const d = String(v||'').replace(/\\D/g,''); return d?('******'+d.slice(-4)):""; })(kv[6][1]);
-        y = kvGrid(kv, y);
-
-        if(r.rationale){ badge('Rationale', y); y = paragraph(r.rationale, y+2); }
-        if(r.strengths){ badge('Strengths', y); y = paragraph(r.strengths, y+2); }
-        if(r.weaknesses){ badge('Weaknesses', y); y = paragraph(r.weaknesses, y+2); }
-        if(r.proposers){ badge('Proposers', y); y = paragraph(r.proposers, y+2); }
-        if(r.positions){ badge('Positions Held', y); y = paragraph(r.positions, y+2); }
-        if(r.elections){ badge('Elections Contested', y); y = paragraph(r.elections, y+2); }
+        `);
       });
 
-      return doc.output('blob');
-    }
+    const css = document.querySelector('style').innerHTML;
+    const html = `
+      <html>
+      <head>
+        <meta charset="utf-8"/>
+        <title>Candidate Dossiers</title>
+        <style>
+          ${css}
+          body{margin:0}
+          .print-wrap{counter-reset: page}
+          .print-page .pagenum:after{counter-increment: page; content: "Page " counter(page);}
+        </style>
+        <!-- keep same font for print window -->
+        ${document.querySelector('link[href*="fonts.googleapis"]').outerHTML}
+        ${document.querySelector('link[href*="fonts.gstatic"]').outerHTML || ""}
+      </head>
+      <body>
+        <div class="print-wrap">
+          ${pages.join('\\n')}
+        </div>
+        <script>setTimeout(function(){ window.print(); }, 350);</script>
+      </body>
+      </html>
+    `;
+    w.document.open(); w.document.write(html); w.document.close();
+  });
 
-    // Actions
-    samplePdfBtn.addEventListener('click', ()=>{
-      try{
-        const sampleRows = Papa.parse(templateCSV, { header:true }).data;
-        const blob = buildPdf(sampleRows);
-        downloadBlob(blob, 'sample_output.pdf');
-      }catch(e){ showError('Sample PDF failed: ' + (e?.message||e)); }
-    });
-
-    downloadBtn.addEventListener('click', ()=>{
-      clearError();
-      if(!rows.length){ showError('Please upload a CSV first.'); return; }
-      setBusy(true);
-      try{
-        const blob = buildPdf(rows);
-        downloadBlob(blob, 'candidate_dossiers.pdf');
-      }catch(e){ showError('PDF generation failed: ' + (e?.message||e)); }
-      finally{ setBusy(false); }
-    });
-
-    document.getElementById('previewBtn').addEventListener('click', ()=>{
-      clearError(); previewDiv.innerHTML = '';
-      rows.forEach((r, i)=>{
-        const el = document.createElement('div'); el.className = 'sheet';
-        el.innerHTML = `
-          <h3>${i+1}. ${escHTML(r.name||'Unnamed')} <span class="muted small">(${escHTML(r.category||'')}${r.caste?'/'+escHTML(r.caste):''})</span></h3>
-          <div class="kv small">
-            <strong>Name</strong><div>${escHTML(r.name||'')}</div>
-            <strong>Category/Caste</strong><div>${escHTML(r.category||'')}${r.caste?'/'+escHTML(r.caste):''}</div>
-            <strong>Age</strong><div>${escHTML(r.age||'')}</div>
-            <strong>Occupation</strong><div>${escHTML(r.occupation||'')}</div>
-            <strong>Education</strong><div>${escHTML(r.education||'')}</div>
-            <strong>Year Joined</strong><div>${escHTML(r.joined||'')}</div>
-            <strong>Phone</strong><div>${escHTML(maskPhone(r.phone))}</div>
-            <strong>Record</strong><div>${escHTML(r.record||'')}</div>
-          </div>
-          <hr/>
-          <div class="small"><strong>Rationale.</strong> ${escHTML(r.rationale||'')}</div>
-          <div class="small"><strong>Strengths.</strong> ${escHTML(r.strengths||'')}</div>
-          <div class="small"><strong>Weaknesses.</strong> ${escHTML(r.weaknesses||'')}</div>
-          <div class="small"><strong>Proposers.</strong> ${escHTML(r.proposers||'')}</div>
-          <div class="small"><strong>Positions Held.</strong> ${escHTML(r.positions||'')}</div>
-          <div class="small"><strong>Elections Contested.</strong> ${escHTML(r.elections||'')}</div>
-        `;
-        previewDiv.appendChild(el);
-      });
-    });
-
-    // Kill stale service workers so old JS can't hijack
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister())).catch(()=>{});
-    }
-
-    // Enable at least sample PDF immediately (even before CSV)
-    document.getElementById('samplePdfBtn').disabled = false;
+  // CSV template is ready immediately
+  // Kill stale SW if any
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});
   }
 })();
 </script>
