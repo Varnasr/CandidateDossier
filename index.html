@@ -152,7 +152,7 @@
 
 <script>
 (function(){
-  // --- tabs & theme ---
+  // --- UI wiring ---
   const app = document.getElementById('app');
   const tabs = document.querySelectorAll('.tabbar button');
   const sections = {
@@ -168,6 +168,8 @@
       for (const k in sections) sections[k].style.display = (k===id) ? '' : 'none';
     });
   });
+
+  // Theme toggle
   const btn = document.getElementById('themeToggle');
   const sun = document.getElementById('sunIcon');
   const moon= document.getElementById('moonIcon');
@@ -198,7 +200,9 @@
     fileError.style.display='none';
     fileError.textContent = '';
   }
-  function setBusy(on){ busy.style.display = on ? 'inline' : 'none'; }
+  function setBusy(on){
+    busy.style.display = on ? 'inline' : 'none';
+  }
 
   // Normalize headers: trim, lowercase, collapse spaces/underscores
   function normalizeHeader(h){
@@ -279,8 +283,10 @@
 
   // CSV change handler
   csvInput.addEventListener('change', ()=>{
-    clearError(); easyMsg.textContent = '';
-    csvRows = null; compileBtn.disabled = true;
+    clearError();
+    easyMsg.textContent = '';
+    csvRows = null;
+    compileBtn.disabled = true;
 
     const f = csvInput.files && csvInput.files[0];
     if(!f){ return; }
@@ -299,7 +305,8 @@
         console.log('[Papa.parse] meta:', res.meta);
         console.log('[Papa.parse] errors:', res.errors);
         if(res.errors && res.errors.length){
-          showError('CSV parse error: ' + res.errors[0].message); return;
+          showError('CSV parse error: ' + res.errors[0].message);
+          return;
         }
         let rows = res.data || [];
         // Normalize keys of each row back to canonical names
@@ -308,12 +315,14 @@
         REQUIRED.forEach(k=>{
           const nk = normalizeHeader(k);
           const idx = fields.indexOf(nk);
-          mapBack[k] = (idx === -1) ? null : res.meta.fields[idx];
+          if (idx === -1) mapBack[k] = null;
+          else mapBack[k] = res.meta.fields[idx];
         });
 
         const missing = REQUIRED.filter(k => mapBack[k] === null);
         if (missing.length){
-          showError('CSV missing columns: ' + missing.join(', ')); return;
+          showError('CSV missing columns: ' + missing.join(', '));
+          return;
         }
 
         // Remap each row to canonical keys
@@ -341,7 +350,9 @@
     if(!csvRows || !csvRows.length){
       showError('Please upload a CSV first.'); return;
     }
-    clearError(); setBusy(true); compileBtn.disabled = true;
+    clearError();
+    setBusy(true);
+    compileBtn.disabled = false; // keep clickable in case user retries quickly
 
     const blocksTex = buildBlocksTex(csvRows);
     try{
@@ -366,7 +377,6 @@
       showError('Network or function error: ' + (e && e.message ? e.message : e));
     } finally {
       setBusy(false);
-      compileBtn.disabled = false;
     }
   }
 
