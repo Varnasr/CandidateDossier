@@ -6,40 +6,30 @@
 <title>Ummidvaar Dastaavez — Candidate Dossiers</title>
 <meta http-equiv="Cache-Control" content="no-store"/>
 
-<!-- Inter font (degrades to system UI if blocked) -->
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-
 <style>
   :root{
-    /* restrained, professional palette */
-    --blue:#2568c0;   /* header rule, accents */
-    --gold:#ffd54d;   /* section chips */
-    --ink:#0e1218;    /* primary text */
-    --muted:#5f6b7a;  /* secondary text */
-    --bg:#ffffff;     /* page bg */
-    --card:#ffffff;   /* cards */
-    --border:#e7e9ef; /* dividers */
-    --soft:#f6f7fb;   /* subtle highlight */
+    /* Professional, restrained palette (blue/yellow/black on white; pale grey dividers) */
+    --blue:#2568c0;
+    --gold:#ffd54d;
+    --ink:#0f131a;
+    --muted:#5f6b7a;
+    --bg:#ffffff;
+    --card:#ffffff;
+    --border:#e7e9ef;
+    --soft:#f6f7fb;
   }
   [data-theme="dark"]{
     --bg:#0f1115; --card:#151923; --ink:#e9eef7; --muted:#b8c0cc;
     --border:#2b3240; --soft:#1a2130; --blue:#5ba0ff; --gold:#f2c441;
   }
-
   html,body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font:14px/1.55 "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    -webkit-font-smoothing:antialiased;
-    -moz-osx-font-smoothing:grayscale;
+    margin:0; background:var(--bg); color:var(--ink);
+    font:14px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
   }
   .wrap{max-width:1000px;margin:0 auto;padding:20px}
   header{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
   h1{margin:0;font-size:1.7rem;font-weight:800;letter-spacing:.2px}
-
   .sunmoon{width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:1px solid var(--border);background:var(--card);cursor:pointer}
   .sunmoon svg{width:18px;height:18px}
 
@@ -52,7 +42,9 @@
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .error{border-left:4px solid #d33;background:#fff2f2;color:#7a0c0c;padding:10px;border-radius:10px;margin-top:10px;display:none}
   [data-theme="dark"] .error{background:#2a1111;color:#ffd0d0}
+
   .small{font-size:.92rem}
+  code{background:var(--soft);padding:2px 6px;border-radius:6px}
 
   #preview{max-width:860px;margin:0 auto}
   .sheet{border:1px solid var(--border);border-radius:10px;padding:16px;margin:12px 0;background:#fff;color:#000}
@@ -62,24 +54,24 @@
   .kv strong{white-space:nowrap}
   hr{border:0;border-top:1px solid var(--border);margin:12px 0}
 
-  /* Print layout (high-quality, A4) */
-  .print-wrap{font:11.5pt/1.45 "Inter", system-ui, Arial, sans-serif; color:#131821}
+  /* PRINT LAYOUT — “LaTeX-level” discipline via paged CSS */
+  .print-wrap{font:11.25pt/1.45 system-ui, Segoe UI, Roboto, Arial, sans-serif; color:#121620}
   .print-page{page-break-after:always; padding:22mm 18mm; position:relative}
-  .print-title{font:800 26pt/1.2 "Inter", system-ui; margin:0 0 10mm 0; letter-spacing:.1px}
-  .print-rule{height:2px;background:var(--blue);margin:3mm 0 8mm 0}
-  .chip{display:inline-block;background:var(--gold);color:#111;padding:2px 8px;border-radius:8px;font:700 10pt "Inter", system-ui}
+  .print-title{font:800 26pt/1.2 system-ui; margin:0 0 8mm 0; letter-spacing:.1px}
+  .print-rule{height:2px;background:var(--blue);margin:2mm 0 7mm 0}
+  .chip{display:inline-block;background:var(--gold);color:#111;padding:2px 8px;border-radius:8px;font:700 10pt system-ui}
   .kv2{display:grid;grid-template-columns:36mm 64mm 36mm 64mm;gap:3mm 6mm;margin-top:3mm}
-  .kv2 .lab{font:700 10pt "Inter", system-ui;color:#101318}
-  .kv2 .val{font:10pt "Inter", system-ui;color:#2b313a}
+  .kv2 .lab{font:700 10pt system-ui;color:#101318}
+  .kv2 .val{font:10pt system-ui;color:#2b313a}
   .sec{margin-top:6mm}
   .sec .hd{display:flex;align-items:center;gap:5mm;margin:0 0 2mm 0}
   .goldbar{width:14mm;height:2.2mm;background:var(--gold)}
-  .hd span{font:700 11pt "Inter", system-ui}
-  .para{font:10.5pt "Inter", system-ui; white-space:pre-wrap; color:#2b313a}
-  .pagenum{position:absolute;bottom:10mm;right:18mm;font:600 9pt "Inter", system-ui;color:#6b7280}
+  .hd span{font:700 11pt system-ui}
+  .para{font:10.5pt system-ui; white-space:pre-wrap; color:#2b313a}
+  .pagenum{position:absolute;bottom:10mm;right:18mm;font:600 9pt system-ui;color:#6b7280}
 
   .cover .print-title{font-size:28pt}
-  .cover .meta{font:600 12pt "Inter", system-ui;margin-top:4mm;color:#2b313a}
+  .cover .meta{font:600 12pt system-ui;margin-top:4mm;color:#2b313a}
   .cover .print-rule{height:3px}
 
   @page{size:A4;margin:0}
@@ -96,21 +88,23 @@
     </button>
   </header>
 
+  <!-- EXPLANATION FIRST -->
   <section class="card">
-    <h2>Why this tool</h2>
+    <h2>What this is & why it matters</h2>
     <p>
-      Upload a structured <span class="hl">CSV</span> and get a print-ready <span class="hl">PDF dossier</span>—cover plus one page per candidate—with consistent typography,
-      disciplined spacing, section badges, and page numbers. Phone numbers are <strong>mandatorily masked</strong> (e.g., <code>******2345</code>).
+      This tool turns a structured <span class="hl">CSV</span> into a print-ready <span class="hl">A4 PDF dossier</span> — one page per candidate — using a restrained professional palette, clean key–value grids, gold section badges, and page numbers. 
+      All phone numbers are <strong>mandatorily masked</strong> to the last four digits (e.g., <code>******2345</code>) to protect privacy.
     </p>
     <p class="muted">
-      Required CSV headers (names are tolerant for spaces/underscores/case):<br/>
+      <strong>Required CSV headers</strong> (names are tolerant for spaces/underscores/case):<br/>
       <code>preference, name, category, caste, age, occupation, education, joined, phone, record, rationale, strengths, weaknesses, proposers, positions, elections</code>
     </p>
   </section>
 
+  <!-- ACTIONS -->
   <section class="card">
-    <h2>Create the PDF</h2>
-    <div class="row controls">
+    <h2>Make the PDF</h2>
+    <div class="row">
       <div>
         <label><strong>Upload CSV</strong></label>
         <input id="csvFile" type="file" accept=".csv,text/csv"/>
@@ -118,12 +112,14 @@
       <button id="printBtn" class="btn secondary" disabled>Open Print-to-PDF</button>
       <button id="previewBtn" class="btn" disabled>Preview on Page</button>
       <a id="templateLink" class="btn" download="sample_candidate_data.csv">Download CSV Template</a>
+      <button id="sampleBtn" class="btn">View Sample One-Pager</button>
       <div id="busy" class="muted" style="display:none">Working…</div>
     </div>
     <div id="fileError" class="error"></div>
-    <p class="muted small">Use your own CSV if headers match. Masking is automatic and cannot be turned off.</p>
+    <p class="muted small">Tip: Use the template, or your own CSV if headers match exactly. Masking is automatic and cannot be turned off.</p>
   </section>
 
+  <!-- OPTIONAL PREVIEW -->
   <section class="card">
     <h2>Preview (optional)</h2>
     <div id="preview"></div>
@@ -148,15 +144,15 @@
   const HEADERS = "preference,name,category,caste,age,occupation,education,joined,phone,record,rationale,strengths,weaknesses,proposers,positions,elections".split(',');
   const norm = s => String(s||'').trim().toLowerCase().replace(/\s+/g,'').replace(/_/g,'');
   const esc = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-  const maskPhone = v => { const d = String(v||'').replace(/\\D/g,''); return d ? '******' + d.slice(-4) : ''; };
+  const maskPhone = v => { const d = String(v||'').replace(/\D/g,''); return d ? '******' + d.slice(-4) : ''; };
 
   function showError(msg){ const e=document.getElementById('fileError'); e.style.display='block'; e.textContent=msg; }
   function clearError(){ const e=document.getElementById('fileError'); e.style.display='none'; e.textContent=''; }
   function setBusy(on){ document.getElementById('busy').style.display = on?'inline':'none'; }
 
-  /* Minimal, robust CSV parser (quoted fields supported) */
+  /* Robust minimal CSV parser (supports quoted fields and commas inside quotes) */
   function parseCSV(text){
-    const out=[]; let row=[], cur='', q=false;
+    const rows=[]; let row=[], cur='', q=false;
     for(let i=0;i<text.length;i++){
       const c=text[i], n=text[i+1];
       if(q){
@@ -166,13 +162,13 @@
       }else{
         if(c=='"'){ q=true; }
         else if(c==','){ row.push(cur); cur=''; }
-        else if(c=='\\n'){ row.push(cur); out.push(row); row=[]; cur=''; }
-        else if(c=='\\r'){ /* ignore */ }
+        else if(c=='\n'){ row.push(cur); rows.push(row); row=[]; cur=''; }
+        else if(c=='\r'){ /* ignore */ }
         else { cur+=c; }
       }
     }
-    row.push(cur); out.push(row);
-    return out;
+    row.push(cur); rows.push(row);
+    return rows;
   }
 
   /* Downloadable CSV template */
@@ -181,23 +177,24 @@
     '1,Anita Devi,SC,Mahadalit,34,Anganwadi Worker,Class 12,2012,9891123456,Active in SHG; no adverse records,"Strong community rapport; consistent attendance","Limited formal political experience","Sita Kumari; Renu Devi","Panchayat Education Committee Member","Contested Ward Member 2021"',
     '2,Rahim Ansari,EBC,Ansari,41,Weaver,Class 10,2008,9876543210,No adverse records,"Respected artisan; youth engagement","Needs support for documentation","Salim Khan; Farida Bano","SHG Treasurer","Contested Ward Member 2016"',
     '3,Sunita Kumari,General,Bhumihar,29,ASHA Worker,Graduate,2019,9123456789,No adverse records,"High field presence; women\'s networks","Public speaking confidence","Meera Devi; Poonam Devi","School Management Committee","N/A"'
-  ].join('\\n');
+  ].join('\n');
   document.getElementById('templateLink').href = URL.createObjectURL(new Blob([templateCSV], {type:'text/csv'}));
 
   /* State */
   let records = [];
 
-  /* Upload */
-  const csvInput = document.getElementById('csvFile');
+  const csvInput   = document.getElementById('csvFile');
   const previewBtn = document.getElementById('previewBtn');
-  const printBtn = document.getElementById('printBtn');
+  const printBtn   = document.getElementById('printBtn');
+  const sampleBtn  = document.getElementById('sampleBtn');
   const previewDiv = document.getElementById('preview');
 
+  /* Load CSV */
   csvInput.addEventListener('change', async ()=>{
     clearError(); records = []; previewDiv.innerHTML=''; previewBtn.disabled = true; printBtn.disabled = true;
-    const f = csvInput.files && csvInput.files[0];
+    const f = csvInput.files && csvFile.files[0];
     if(!f) return;
-    if(!/\\.csv$/i.test(f.name)){ showError('Please upload a CSV (not PDF).'); return; }
+    if(!/\.csv$/i.test(f.name)){ showError('Please upload a CSV (not PDF).'); return; }
     if(f.size > 12 * 1024 * 1024){ showError('CSV too large (>12MB).'); return; }
 
     setBusy(true);
@@ -228,7 +225,7 @@
     }
   });
 
-  /* On-page Preview */
+  /* Optional Preview on page */
   previewBtn.addEventListener('click', ()=>{
     previewDiv.innerHTML='';
     records.forEach((r,i)=>{
@@ -257,93 +254,112 @@
     });
   });
 
-  /* High-quality print window (Save as PDF) */
-  printBtn.addEventListener('click', ()=>{
-    if(!records.length){ showError('Please upload a CSV first.'); return; }
-
+  /* Open high-quality print window (Save as PDF) */
+  function openPrintWindow(list){
     const w = window.open('', '_blank');
     const today = new Date();
     const dateStr = today.toLocaleDateString('en-IN', { year:'numeric', month:'long', day:'numeric' });
     const esc2 = s => String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const masked = v => { const d=String(v||'').replace(/\\D/g,''); return d?('******'+d.slice(-4)):""; };
+    const masked = v => { const d=String(v||'').replace(/\D/g,''); return d?('******'+d.slice(-4)):""; };
 
     const pages = [];
-    // Cover
-    pages.push(`
-      <div class="print-page cover">
-        <div class="print-title">Candidate Dossiers</div>
-        <div class="print-rule"></div>
-        <div class="meta">Prepared: ${esc2(dateStr)}</div>
-        <div class="meta">Total candidates: ${records.length}</div>
-        <div class="pagenum"></div>
-      </div>
-    `);
-    // Per-candidate pages
-    records
-      .sort((a,b)=> (String(a.preference||'').localeCompare(String(b.preference||''), 'en', {numeric:true})))
-      .forEach((r,idx)=>{
-        const kv = `
-          <div class="kv2">
-            <div class="lab">Name</div><div class="val">${esc2(r.name||'')}</div>
-            <div class="lab">Category/Caste</div><div class="val">${esc2([r.category,r.caste].filter(Boolean).join('/'))}</div>
-            <div class="lab">Age</div><div class="val">${esc2(r.age||'')}</div>
-            <div class="lab">Occupation</div><div class="val">${esc2(r.occupation||'')}</div>
-            <div class="lab">Education</div><div class="val">${esc2(r.education||'')}</div>
-            <div class="lab">Year Joined</div><div class="val">${esc2(r.joined||'')}</div>
-            <div class="lab">Phone</div><div class="val">${esc2(masked(r.phone))}</div>
-            <div class="lab">Record</div><div class="val">${esc2(r.record||'')}</div>
-          </div>`;
-        const narrative = (label, text)=> text ? `
-          <div class="sec">
-            <div class="hd"><div class="goldbar"></div><span>${label}.</span></div>
-            <div class="para">${esc2(text)}</div>
-          </div>` : '';
 
-        pages.push(`
-          <div class="print-page">
-            <div class="print-title">${idx+1}. ${esc2(r.name || 'Unnamed')}</div>
-            <div class="print-rule"></div>
-            <div class="chip">${esc2([r.category,r.caste].filter(Boolean).join('/'))}</div>
-            ${kv}
-            ${narrative('Rationale', r.rationale)}
-            ${narrative('Strengths', r.strengths)}
-            ${narrative('Weaknesses', r.weaknesses)}
-            ${narrative('Proposers', r.proposers)}
-            ${narrative('Positions Held', r.positions)}
-            ${narrative('Elections Contested', r.elections)}
-            <div class="pagenum"></div>
-          </div>
-        `);
-      });
+    // Cover (optional); Commented if you only want one-pagers.
+    // pages.push(`
+    //   <div class="print-page cover">
+    //     <div class="print-title">Candidate Dossiers</div>
+    //     <div class="print-rule"></div>
+    //     <div class="meta">Prepared: ${esc2(dateStr)}</div>
+    //     <div class="meta">Total candidates: ${list.length}</div>
+    //     <div class="pagenum"></div>
+    //   </div>
+    // `);
+
+    // One-pager per candidate
+    list.forEach((r,idx)=>{
+      const chip = esc2([r.category,r.caste].filter(Boolean).join('/'));
+      const kv = `
+        <div class="kv2">
+          <div class="lab">Name</div><div class="val">${esc2(r.name||'')}</div>
+          <div class="lab">Category/Caste</div><div class="val">${chip}</div>
+          <div class="lab">Age</div><div class="val">${esc2(r.age||'')}</div>
+          <div class="lab">Occupation</div><div class="val">${esc2(r.occupation||'')}</div>
+          <div class="lab">Education</div><div class="val">${esc2(r.education||'')}</div>
+          <div class="lab">Year Joined</div><div class="val">${esc2(r.joined||'')}</div>
+          <div class="lab">Phone</div><div class="val">${esc2(masked(r.phone))}</div>
+          <div class="lab">Record</div><div class="val">${esc2(r.record||'')}</div>
+        </div>`;
+      const section = (label, text)=> text ? `
+        <div class="sec">
+          <div class="hd"><div class="goldbar"></div><span>${label}.</span></div>
+          <div class="para">${esc2(text)}</div>
+        </div>` : '';
+
+      pages.push(`
+        <div class="print-page">
+          <div class="print-title">${esc2(r.name || 'Unnamed')}</div>
+          <div class="print-rule"></div>
+          <div class="chip">${chip || '—'}</div>
+          ${kv}
+          ${section('Rationale', r.rationale)}
+          ${section('Strengths', r.strengths)}
+          ${section('Weaknesses', r.weaknesses)}
+          ${section('Proposers', r.proposers)}
+          ${section('Positions Held', r.positions)}
+          ${section('Elections Contested', r.elections)}
+          <div class="pagenum"></div>
+        </div>
+      `);
+    });
 
     const css = document.querySelector('style').innerHTML;
     const html = `
       <html>
       <head>
         <meta charset="utf-8"/>
-        <title>Candidate Dossiers</title>
-        <style>
-          ${css}
-          body{margin:0}
-          .print-wrap{counter-reset: page}
-          .print-page .pagenum:after{counter-increment: page; content: "Page " counter(page);}
-        </style>
-        <!-- keep same font for print window -->
-        ${document.querySelector('link[href*="fonts.googleapis"]').outerHTML}
-        ${document.querySelector('link[href*="fonts.gstatic"]').outerHTML || ""}
+        <title>Dossiers</title>
+        <style>${css} body{margin:0} .print-wrap{counter-reset: page} .print-page .pagenum:after{counter-increment: page; content: "Page " counter(page);} </style>
       </head>
       <body>
-        <div class="print-wrap">
-          ${pages.join('\\n')}
-        </div>
-        <script>setTimeout(function(){ window.print(); }, 350);</script>
+        <div class="print-wrap">${pages.join('')}</div>
+        <script>setTimeout(function(){window.print()},350)</script>
       </body>
       </html>
     `;
     w.document.open(); w.document.write(html); w.document.close();
+  }
+
+  /* Print actual CSV */
+  printBtn.addEventListener('click', ()=>{
+    if(!records.length){ showError('Please upload a CSV first.'); return; }
+    // Sort by preference if present
+    const sorted = [...records].sort((a,b)=> (String(a.preference||'').localeCompare(String(b.preference||''),'en',{numeric:true})));
+    openPrintWindow(sorted);
   });
 
-  // CSV template is ready immediately
+  /* Instant sample (one-pager) for your demo */
+  sampleBtn.addEventListener('click', ()=>{
+    const sample = [{
+      preference:'1',
+      name:'Anita Devi',
+      category:'SC',
+      caste:'Mahadalit',
+      age:'34',
+      occupation:'Anganwadi Worker',
+      education:'Class 12',
+      joined:'2012',
+      phone:'9891123456',
+      record:'Active in SHG; no adverse records',
+      rationale:'Strong community rapport; consistent attendance',
+      strengths:'Grassroots presence; trusted by women’s groups',
+      weaknesses:'Limited formal political experience',
+      proposers:'Sita Kumari; Renu Devi',
+      positions:'Panchayat Education Committee Member',
+      elections:'Contested Ward Member 2021'
+    }];
+    openPrintWindow(sample);
+  });
+
   // Kill stale SW if any
   if('serviceWorker' in navigator){
     navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister())).catch(()=>{});
