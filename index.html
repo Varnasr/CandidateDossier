@@ -295,11 +295,9 @@
       
       pages.push(`
         <div class="print-page">
-          <div class="watermark">CSV → LaTeX → PDF</div>
-          
           <div class="print-header">
             <h1 class="print-title">Candidate Dossier</h1>
-            <div class="print-subtitle">Ummidvaar Dastaavez</div>
+            <div class="print-date">${dateStr}</div>
           </div>
           
           <div class="cat-badge">Preference ${r.preference || (idx+1)}</div>
@@ -367,7 +365,7 @@
             <div class="section-content">${esc(r.elections_contested)}</div>
           </div>` : ''}
           
-          <div class="pagenum">${idx + 1}</div>
+          <div class="pagenum">Page ${idx + 1}</div>
         </div>
       `);
     });
@@ -383,13 +381,6 @@
         page-break-after: always;
         position: relative;
       }
-      .watermark {
-        position: absolute;
-        top: 10mm;
-        right: 18mm;
-        font: 8pt Arial, sans-serif;
-        color: #999;
-      }
       .print-header {
         border-bottom: 3px solid #1e3a8a;
         padding-bottom: 5mm;
@@ -400,7 +391,7 @@
         color: #1e3a8a;
         margin: 0;
       }
-      .print-subtitle {
+      .print-date {
         font: 10pt Arial, sans-serif;
         color: #666;
         margin-top: 2mm;
@@ -472,7 +463,7 @@
       <html>
       <head>
         <meta charset="utf-8"/>
-        <title>Candidate Dossiers - ${dateStr}</title>
+        <title>Candidate Dossiers</title>
         <style>${printStyles}</style>
       </head>
       <body>
