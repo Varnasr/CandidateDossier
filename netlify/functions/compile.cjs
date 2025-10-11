@@ -1,5 +1,5 @@
-// CommonJS, unbundled. Writes ONLY to /tmp.
-// Requires: netlify.toml -> [functions] node_bundler = "none"
+// netlify/functions/compile.cjs
+// CommonJS, unbundled. Writes ONLY to /tmp so Lambda stays happy (no read-only errors).
 
 const { spawn } = require("node:child_process");
 const fs = require("node:fs").promises;
@@ -9,11 +9,13 @@ const { join } = require("node:path");
 async function resolveTectonicPath() {
   const { access } = require("node:fs").promises;
   const candidates = [
-    join(__dirname, "bin/tectonic"),
-    join(__dirname, "../bin/tectonic"),
-    process.env.LAMBDA_TASK_ROOT && join(process.env.LAMBDA_TASK_ROOT, "netlify/functions/bin/tectonic"),
-    join(process.cwd(), "netlify/functions/bin/tectonic"),
+    join(__dirname, "bin/tectonic"),                           // bundled next to function
+    join(__dirname, "../bin/tectonic"),                        // sometimes one up
+    process.env.LAMBDA_TASK_ROOT &&
+      join(process.env.LAMBDA_TASK_ROOT, "netlify/functions/bin/tectonic"),
+    join(process.cwd(), "netlify/functions/bin/tectonic"),     // fallback
   ].filter(Boolean);
+
   for (const p of candidates) {
     try { await access(p); return p; } catch {}
   }
@@ -25,6 +27,7 @@ exports.handler = async (event) => {
     if (event.httpMethod !== "POST") {
       return { statusCode: 405, body: "Method not allowed" };
     }
+
     let body = {};
     try { body = JSON.parse(event.body || "{}"); } catch {}
     const { mainTex, blocksTex } = body;
@@ -32,7 +35,7 @@ exports.handler = async (event) => {
       return { statusCode: 400, body: "mainTex and blocksTex required" };
     }
 
-    // All writes in /tmp
+    // Create writable temp dirs under /tmp
     const base    = await fs.mkdtemp(join(tmpdir(), "tectonic-"));
     const workDir = join(base, "work");
     const outDir  = join(base, "out");
@@ -41,8 +44,8 @@ exports.handler = async (event) => {
     await fs.mkdir(outDir,  { recursive: true });
     await fs.mkdir(cache,   { recursive: true });
 
-    // Source files (inside /tmp)
-    await fs.writeFile(join(workDir, "main.tex"),            mainTex,   "utf8");
+    // Write TeX sources inside /tmp
+    await fs.writeFile(join(workDir, "main.tex"),             mainTex,   "utf8");
     await fs.writeFile(join(workDir, "candidate_blocks.tex"), blocksTex, "utf8");
 
     const tt = await resolveTectonicPath();
@@ -51,9 +54,14 @@ exports.handler = async (event) => {
     const pdfBuf = await new Promise((resolve, reject) => {
       const p = spawn(
         tt,
-        ["-X", "compile", "main.tex", "--outdir", outDir, "--chatter", "minimal"],
-        { stdio: ["ignore", "pipe", "pipe"], cwd: workDir, env: { ...process.env, TECTONIC_CACHE_DIR: cache, TMPDIR: base } }
+        ["-X", "compile", "main.tex", "--outdir", outDir], // <- no --chatter
+        {
+          stdio: ["ignore", "pipe", "pipe"],
+          cwd: workDir,
+          env: { ...process.env, TECTONIC_CACHE_DIR: cache, TMPDIR: base }
+        }
       );
+
       let stderr = "";
       p.stderr.on("data", d => { stderr += d.toString(); });
       p.on("error", reject);
