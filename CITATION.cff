@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use this project in your research, please cite it as below."
+type: software
+title: "CandidateDossier: Privacy-First Candidate Dossier Generator"
+authors:
+  - family-names: Raman
+    given-names: Varna Sri
+url: "https://github.com/Varnasr/CandidateDossier"
+repository-code: "https://github.com/Varnasr/CandidateDossier"
+license: MIT
+keywords:
+  - latex
+  - pdf
+  - privacy
+  - document-generation
+  - elections
+
+date-released: "2025-01-01"
