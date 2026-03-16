@@ -2,6 +2,7 @@
   "name": "ummidvaar-dastaavez",
   "private": true,
   "scripts": {
-    "build": "bash scripts/fetch-tectonic.sh"
+    "build": "bash scripts/fetch-tectonic.sh",
+    "prepare": "git config core.hooksPath .githooks"
   }
 }
