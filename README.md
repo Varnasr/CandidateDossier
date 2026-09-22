@@ -8,22 +8,27 @@ Privacy-first: **phone numbers and emails are always masked**. Pure client-side 
 
 ---
 
-## 🎯 Purpose
+## Purpose
 
 District teams often struggle with inconsistent candidate forms and poorly formatted PDFs.  
-This tool transforms structured CSV data into professional, LaTeX-quality PDF dossiers with consistent formatting.
+This tool turns structured CSV data into consistently formatted, print-ready dossiers, one candidate per page.
 
-You simply upload a structured CSV and get print-ready PDFs with one candidate per page, professional typography, and automatic privacy protection.
+You upload a structured CSV and get print-ready pages with one candidate each, consistent typography, and phone and email masking applied before anything is rendered.
 
----
-
-## 🚀 Live Demo
-
-Visit: [https://yourusername.github.io/ummidvaar-dastaavez/](https://yourusername.github.io/ummidvaar-dastaavez/)
+The PDF comes from your browser's print dialogue, not from LaTeX. A server-side
+LaTeX path exists in the repository but is not wired up; see below.
 
 ---
 
-## 🧩 How to Use
+## Live Demo
+
+Visit: [https://varnasr.github.io/CandidateDossier/](https://varnasr.github.io/CandidateDossier/)
+
+(This link was a `yourusername` placeholder until 2026-09-22.)
+
+---
+
+## How to Use
 
 1. **Download the CSV template** from the application
 2. **Fill in candidate data** with all required fields
@@ -35,22 +40,32 @@ No installation, no server, no dependencies - everything runs in your browser.
 
 ---
 
-## 🧱 Repository Structure
+## Repository Structure
 
 ```
 .
-├── index.html                  # Complete web application (HTML/CSS/JS)
-├── README.md                   # This file
-├── LICENSE                     # MIT License
-├── .gitignore                  # Git ignore rules
-└── samples/
-    ├── candidate_template.csv  # Empty template with headers
-    └── sample_data.csv         # Example with filled data
+├── index.html                  # the entire application (HTML/CSS/JS)
+├── candidate_template.csv      # empty template with the required headers
+├── sample_candidate_data.csv   # five filled example rows
+├── scripts/
+│   ├── check.mjs               # static checks, run by CI
+│   └── fetch-tectonic.sh       # Netlify build command; opt-in, see below
+├── netlify/functions/
+│   └── compile.cjs             # server-side LaTeX compile, currently uncalled
+├── main_template.tex           # LaTeX templates for the uncalled path
+├── candidate_blocks.tex
+├── overleaf_sample_project.zip
+├── netlify.toml                # routes /api/compile to the function
+└── .github/workflows/          # ci.yml (checks) and static.yml (Pages deploy)
 ```
+
+An earlier version of this section described a `samples/` directory holding
+`sample_data.csv`. Neither has ever existed; the CSVs are at the root under the
+names above.
 
 ---
 
-## 🧾 CSV Schema
+## CSV Schema
 
 The CSV must have these exact headers (18 fields):
 
@@ -83,7 +98,7 @@ preference,name,category,caste,age,gender,occupation,education,year_joined,phone
 
 ---
 
-## 🔒 Privacy and Compliance
+## Privacy and Compliance
 
 * **Phone masking:** Automatically shows only last 4 digits (******2345)
 * **Email masking:** Shows only first letter and domain (r***@example.com)  
@@ -94,7 +109,7 @@ preference,name,category,caste,age,gender,occupation,education,year_joined,phone
 
 ---
 
-## ⚙️ Deployment Options
+## Deployment Options
 
 ### Option 1: GitHub Pages (Recommended)
 1. Fork or upload this repository to your GitHub account
@@ -102,7 +117,7 @@ preference,name,category,caste,age,gender,occupation,education,year_joined,phone
 3. Set **Source** to "Deploy from a branch"
 4. Select **main** branch and **/ (root)** folder
 5. Click **Save**
-6. Your site will be live at `https://yourusername.github.io/ummidvaar-dastaavez/`
+6. Your site will be live at `https://<your-account>.github.io/CandidateDossier/`
 
 ### Option 2: Any Static Host
 Simply upload `index.html` to any web server. The application is completely self-contained.
@@ -112,7 +127,7 @@ Open `index.html` directly in your browser. Note: Some browsers may restrict fil
 
 ---
 
-## 🎨 Design System
+## Design System
 
 Professional colour palette optimized for readability:
 
@@ -128,9 +143,9 @@ Typography follows LaTeX conventions:
 
 ---
 
-## ✨ Features
+## Features
 
-* **Professional PDF output** with LaTeX-quality typography
+* **Print-ready output** through the browser's print dialogue, with print-specific CSS
 * **One-page-per-candidate** format for easy filing
 * **Automatic data masking** for privacy protection
 * **Dark mode support** for comfortable viewing
@@ -141,7 +156,7 @@ Typography follows LaTeX conventions:
 
 ---
 
-## ⚠️ Browser Compatibility
+## Browser Compatibility
 
 Works on all modern browsers:
 * Chrome/Edge 90+
@@ -153,7 +168,7 @@ For best PDF output, use Chrome or Edge.
 
 ---
 
-## 📘 Technical Notes
+## Technical Notes
 
 * **CSV Parsing:** Handles quoted fields, commas within quotes, and various line endings
 * **PDF Generation:** Uses browser print functionality with CSS print media queries
@@ -162,7 +177,47 @@ For best PDF output, use Chrome or Edge.
 
 ---
 
-## ⚠️ Legal & Licensing
+## Testing
+
+```bash
+node scripts/check.mjs
+```
+
+No dependencies, no network, no browser. It checks the page basics (lang,
+viewport, title, no inline handlers), that the required column list in
+`index.html` matches both shipped CSVs, that no CSV field reaches generated
+markup unescaped, that the `netlify.toml` redirect points at a function that
+exists, and that `compile.cjs` parses. CI runs it on every push and pull
+request; before 2026-09-22 there was no CI beyond the Pages deploy.
+
+Three escaping defects were fixed at the same time. `r.preference` in both the
+preview and the print window, and the combined category/caste string, went into
+generated HTML unescaped, so a candidate list received from someone else could
+inject markup into the printed dossier. The guard was fault-injected to confirm
+it catches the real case.
+
+## The server-side compile path is not wired up
+
+`netlify/functions/compile.cjs` compiles a dossier with Tectonic and
+`netlify.toml` routes `/api/compile` to it, but nothing in the application calls
+it: `index.html` parses the CSV in the browser and produces the PDF through the
+print dialogue. The `.tex` templates and the Overleaf zip belong to that same
+unused path.
+
+`npm run build` was downloading a 37 MB LaTeX engine from a third-party GitHub
+release on every deploy to serve that endpoint, and would have failed the deploy
+if the release were unavailable. That download is now opt-in: set
+`BUILD_COMPILE_FUNCTION=1` in the Netlify environment to restore it. Nothing was
+deleted, so wiring the front end to `/api/compile` later needs only that
+variable.
+
+If the function is wired up, note that it returns **HTTP 200 on failure**: when
+the LaTeX does not compile it falls back to a near-empty document reading
+"Compilation Fallback" and puts the real error in a base64
+`X-Compile-Diagnostics` header. A front end that ignores that header gives the
+user a successful-looking download of a blank dossier.
+
+## Legal & Licensing
 
 * **Code:** MIT License
 * **Documentation:** CC BY-NC-SA 4.0
@@ -172,7 +227,7 @@ For best PDF output, use Chrome or Edge.
 
 ---
 
-## 🧰 Troubleshooting
+## Troubleshooting
 
 | Issue | Solution |
 |-------|----------|
@@ -184,7 +239,7 @@ For best PDF output, use Chrome or Edge.
 
 ---
 
-## 🪶 Attribution
+## Attribution
 
 **उम्मीदवार दस्तावेज़ (Ummidvaar Dastaavez)**  
 Built for transparent, standardized, and inclusive documentation.  
@@ -192,14 +247,14 @@ Professional design system for government and civic applications.
 
 ---
 
-## 🧠 Credits
+## Credits
 
 * **Technology:** HTML5, CSS3, JavaScript (ES6+)
 * **License:** MIT (code) + CC BY-NC-SA (content)
 
 ---
 
-## 📝 Version History
+## Version History
 
 * **v1.0.0** (2025) - Initial release with core functionality
   * CSV upload and validation

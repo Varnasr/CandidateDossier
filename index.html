@@ -290,7 +290,7 @@
       const el=document.createElement('div'); 
       el.className='sheet';
       el.innerHTML = `
-        <h3>Preference ${r.preference||i+1}: ${esc(r.name||'Unnamed')} <span class="muted small">(${esc(r.category||'')}${r.caste?'/'+esc(r.caste):''})</span></h3>
+        <h3>Preference ${esc(r.preference||i+1)}: ${esc(r.name||'Unnamed')} <span class="muted small">(${esc(r.category||'')}${r.caste?'/'+esc(r.caste):''})</span></h3>
         <div class="kv small">
           <strong>Name</strong><div>${esc(r.name||'')}</div>
           <strong>Category/Caste</strong><div>${esc(r.category||'')}${r.caste?'/'+esc(r.caste):''}</div>
@@ -324,7 +324,7 @@
     
     // Generate one page per candidate
     list.forEach((r,idx)=>{
-      const categoryInfo = [r.category, r.caste].filter(Boolean).join('/') || '—';
+      const categoryInfo = esc([r.category, r.caste].filter(Boolean).join('/')) || '&mdash;';
       
       pages.push(`
         <div class="print-page">
@@ -333,7 +333,7 @@
             <div class="print-date">${dateStr}</div>
           </div>
           
-          <div class="cat-badge">Preference ${r.preference || (idx+1)}</div>
+          <div class="cat-badge">Preference ${esc(r.preference || (idx+1))}</div>
           
           <h2 class="candidate-name">${esc(r.name || 'Name Not Provided')}</h2>
           
