@@ -65,3 +65,6 @@ yarn-error.log*
 .nuxt/
 .serverless/
 .firebase/
+
+# Fetched at build time by scripts/fetch-tectonic.sh (37 MB), never committed
+netlify/functions/bin/

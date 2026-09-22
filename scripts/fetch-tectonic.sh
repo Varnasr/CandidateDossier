@@ -1,6 +1,25 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Downloads the Tectonic LaTeX engine (~30 MB) so netlify/functions/compile.cjs
+# can compile a dossier server side.
+#
+# Nothing in the shipped application calls that function. index.html parses the
+# CSV in the browser and produces the PDF through the print dialogue; a search of
+# the repository on 2026-09-22 found no reference to /api/compile or to
+# .netlify/functions anywhere outside the function's own source. So every deploy
+# was downloading a LaTeX engine from a third-party GitHub release, and failing
+# if that URL was unavailable, to serve an endpoint with no caller.
+#
+# The download is therefore opt-in. Set BUILD_COMPILE_FUNCTION=1 in the Netlify
+# environment to restore it; the function and the .tex templates are untouched,
+# so wiring the front end up to it later needs only that variable.
+if [ "${BUILD_COMPILE_FUNCTION:-0}" != "1" ]; then
+  echo "[fetch-tectonic] skipped: no caller for /api/compile."
+  echo "[fetch-tectonic] set BUILD_COMPILE_FUNCTION=1 to fetch the engine."
+  exit 0
+fi
+
 # Always fetch the MUSL build to avoid glibc deps
 VER="0.15.0"
 TARGET="x86_64-unknown-linux-musl"
