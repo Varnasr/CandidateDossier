@@ -1,5 +1,7 @@
 # CandidateDossier (Ummidvaar Dastaavez)
 
+Shared engineering standard: @.claude/engineering-standards.md. It applies to all work in this repository. This file adds what is specific to the project, and wins where the two disagree.
+
 Turns a CSV of candidate records into printable one-page dossiers. Static site,
 no framework, no build step for the part that runs.
 
