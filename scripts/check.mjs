@@ -45,6 +45,18 @@ check("index.html has a viewport meta", () =>
 check("index.html has a title", () =>
   assert(/<title>[^<]+<\/title>/.test(html), "missing <title>"));
 
+check("index.html has a description, a canonical address and matching share tags", () => {
+  const url = "https://varnasr.github.io/CandidateDossier/";
+  const one = (re) => (html.match(re) || [])[1];
+  const desc = one(/<meta name="description" content="([^"]+)"/);
+  assert(desc, "missing meta description");
+  assert(one(/<link rel="canonical" href="([^"]+)"/) === url, `canonical is not ${url}`);
+  assert(one(/<meta property="og:url" content="([^"]+)"/) === url, "og:url does not match the canonical");
+  assert(one(/<meta property="og:description" content="([^"]+)"/) === desc, "og:description differs from the description");
+  assert(one(/<meta property="og:title" content="([^"]+)"/) === one(/<title>([^<]+)<\/title>/), "og:title differs from the title");
+  assert(/<meta name="twitter:card" content="summary"/.test(html), "missing twitter:card");
+});
+
 check("index.html uses no inline event handlers", () => {
   const found = html.match(/\son(click|change|load|submit|error)\s*=/gi) || [];
   assert(found.length === 0, `found ${found.length}: ${[...new Set(found)].join(", ")}`);
