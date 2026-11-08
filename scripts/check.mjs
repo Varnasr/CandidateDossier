@@ -33,6 +33,23 @@ const assert = (cond, msg) => { if (!cond) throw new Error(msg); };
 
 const html = read("index.html");
 
+// A preview picture must be a JPEG or PNG (LinkedIn does not read WebP) of at most
+// 250 KB (WhatsApp drops larger ones), at the size the tags declare.
+function imageSize(buf) {
+  if (buf.length > 24 && buf.toString("latin1", 1, 4) === "PNG") return [buf.readUInt32BE(16), buf.readUInt32BE(20)];
+  if (buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff) {
+    let i = 2;
+    while (i + 9 < buf.length) {
+      if (buf[i] !== 0xff) return null;
+      const m = buf[i + 1];
+      if (m >= 0xc0 && m <= 0xc2) return [buf.readUInt16BE(i + 7), buf.readUInt16BE(i + 5)];
+      i += 2 + buf.readUInt16BE(i + 2);
+    }
+  }
+  return null;
+}
+
+
 // ---------------------------------------------------------------------------
 
 check("index.html declares a language", () =>
@@ -54,7 +71,26 @@ check("index.html has a description, a canonical address and matching share tags
   assert(one(/<meta property="og:url" content="([^"]+)"/) === url, "og:url does not match the canonical");
   assert(one(/<meta property="og:description" content="([^"]+)"/) === desc, "og:description differs from the description");
   assert(one(/<meta property="og:title" content="([^"]+)"/) === one(/<title>([^<]+)<\/title>/), "og:title differs from the title");
-  assert(/<meta name="twitter:card" content="summary"/.test(html), "missing twitter:card");
+  assert(/<meta name="twitter:card" content="summary_large_image"/.test(html), "twitter:card is not summary_large_image");
+});
+
+check("index.html previews with a JPEG or PNG card that exists, within 250 KB", () => {
+  const base = "https://varnasr.github.io/CandidateDossier/";
+  const one = (re) => (html.match(re) || [])[1];
+  const img = one(/<meta property="og:image" content="([^"]+)"/);
+  assert(img && img.startsWith(base), `og:image must be an address under ${base}`);
+  assert(one(/<meta name="twitter:image" content="([^"]+)"/) === img, "twitter:image differs from og:image");
+  assert(one(/<meta property="og:image:width" content="([^"]+)"/) === "1200", "og:image:width is not 1200");
+  assert(one(/<meta property="og:image:height" content="([^"]+)"/) === "630", "og:image:height is not 630");
+  assert(one(/<meta property="og:image:alt" content="([^"]+)"/), "missing og:image:alt");
+  const file = img.slice(base.length);
+  assert(existsSync(join(ROOT, file)), `${img} has no file at ${file}`);
+  const buf = readFileSync(join(ROOT, file));
+  assert(buf.length <= 250000, `${file} is ${buf.length} bytes; WhatsApp drops previews over about 250 KB`);
+  const size = imageSize(buf);
+  assert(size, `${file} is not a JPEG or PNG`);
+  assert(size[0] === 1200 && size[1] === 630, `${file} is ${size[0]}x${size[1]}, the tags say 1200x630`);
+  return `${file}, ${buf.length} bytes`;
 });
 
 check("index.html uses no inline event handlers", () => {
